@@ -1,18 +1,19 @@
 <?php
 namespace ReferenceSystem;
 
-include '../settings/dblogin.php';
-include 'RSArticle.php';
+include_once ($_SERVER['DOCUMENT_ROOT'].'/settings/dblogin.php');
+include_once 'RSArticle.php';
+include_once 'ReferenceSchemeItem.php';
 
-
-print_r(ReferenceSystem::AddReference('тестру/секция2/раздел2/тест','Ехал грека через реку'));
 
 class ReferenceSystem
 {
     public static $HierarchyItems = ['Chapter','Section','Subsection'];
 
     /**
-     * @param $itemId id html элемента, документацию которого требуется получить
+     * Получить статью, относящуюся к HTML элементу с заданным id
+     *
+     * @param string $itemId id html элемента, документацию которого требуется получить
      * @return array|bool|string
      */
     public static function GetItemReference($itemId)
@@ -53,9 +54,32 @@ class ReferenceSystem
     }
 
     /**
-     * @param $path путь в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
+     * Получить статью по id
+     * @param int $id id в БД
+     * @return RSArticle|string
+     */
+    public static function GetArticleByDBId($id)
+    {
+        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        if($mysqli->connect_errno)
+            return "Ошибка: " . $mysqli->error . "\n";
+        $id = $mysqli->real_escape_string($id);
+        $sql = "SELECT * FROM ref_system_data WHERE id = $id";
+        if(!$result = $mysqli->query($sql))
+            return "Ошибка: " . $mysqli->error . "\n";
+
+        if($result->num_rows === 0)
+            return "Ошибка: Данного элемента не существует \r\n";
+        $arr = $result->fetch_assoc();
+        return new RSArticle($arr['id'],$arr['caption'], $arr['content'], $arr['type']);
+    }
+
+    /**
+     * Добавить статью в БД
+     *
+     * @param string $path путь в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
      *              причем (n*Sub)section будет заголовком будущей статьи
-     * @param $content содержимаое статьи (скажем, html код). Идею с содержимым мб надо доработать
+     * @param string $content содержимаое статьи (скажем, html код). Идею с содержимым мб надо доработать
      * @return bool|string
      */
     public static function AddReference($path, $content)
@@ -96,8 +120,10 @@ class ReferenceSystem
     }
 
     /**
-     * @param $itemId id html элемента, к которому надо добавить статью
-     * @param $path путь к статье в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
+     * Связать id HTML элемента со статьей
+     *
+     * @param int $itemId id html элемента, к которому надо добавить статью
+     * @param string $path путь к статье в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
      * @return bool|string
      */
     public static function AddReferenceToItem($itemId, $path)
@@ -114,7 +140,9 @@ class ReferenceSystem
     }
 
     /**
-     * @param $searchString строка для поиска
+     * Проверка на вхождение строки в статью/заголовок
+     *
+     * @param $searchString string строка для поиска
      * @return array|string
      */
     public static function SearchReference($searchString)
@@ -135,7 +163,80 @@ class ReferenceSystem
     }
 
     /**
-     * @param $path путь к статье в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
+     * Получить массив детей элемента
+     *
+     * @param string $path
+     * @return array|string
+     */
+    public static function GetItemChildren($path)
+    {
+        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        if($mysqli->connect_errno)
+            return "Ошибка: " . $mysqli->error . "\n";
+        $id = self::PathToId($path);
+        $sql = "SELECT id,type,caption FROM ref_system_data WHERE parent_id = $id";
+        if(!$result = $mysqli->query($sql))
+            return "Ошибка: " . $mysqli->error . "\n";
+        $children = array();
+        for ($i = 0; !($result->num_rows === 0) and $arr = $result->fetch_assoc(); $i++)
+        {
+            $children[$i] = new RSArticle($arr['id'],$arr['caption'], null, $arr['type']);
+        }
+        $mysqli->close();
+        return $children;
+    }
+
+    /**
+     * Получение схемы оглавления. По факту практически обход в глубину
+     *
+     * @param array() $scheme
+     * @return ReferenceSchemeItem[]
+     */
+    public static function GetReferenceScheme($scheme)
+    {
+        if(count($scheme) === 0)
+        {
+            $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+            if($mysqli->connect_errno)
+                return "Ошибка: " . $mysqli->error . "\n";
+            $type = self::$HierarchyItems[0];
+            $sql = "SELECT id,type,caption FROM ref_system_data WHERE type = '$type'";
+            if(!$result = $mysqli->query($sql))
+                return "Ошибка: " . $mysqli->error . "\n";
+            for ($i = 0; !($result->num_rows === 0) and $arr = $result->fetch_assoc(); $i++) {
+                $scheme[$i] = new ReferenceSchemeItem(new RSArticle($arr['id'], $arr['caption'], null, $arr['type']),
+                    array(), null, $arr['caption']);
+            }
+            for($i=0; $i<count($scheme); $i++)
+                $scheme[$i]->FirstLevel = $scheme;
+            $mysqli->close();
+            return self::GetReferenceScheme($scheme);
+        }
+        else
+        {
+            for($i=0; $i<count($scheme); $i++)
+            {
+                $path = $scheme[$i]->Path;
+                $children = self::GetItemChildren($path);
+                for ($j = 0; $j<count($children); $j++)
+                {
+                    $scheme[$i]->Children[$j] = new ReferenceSchemeItem($children[$j],array(),$scheme[$i]->FirstLevel,
+                                                                        $path . '/' . $children[$j]->Caption);
+                    if(count($children)>0)
+                        self::GetReferenceScheme($scheme[$i]->Children);
+                }
+
+            }
+            return $scheme[0]->FirstLevel;
+        }
+
+
+    }
+
+    /**
+     * Конвертирование пути в id статьи в БД
+     *
+     * @param string $path путь к статье в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
      * @return int|string
      */
     private static function PathToId($path)
@@ -157,6 +258,7 @@ class ReferenceSystem
                 return "Ошибка: " . $mysqli->error . "\n";
             $parent_id = $result->fetch_assoc()['id'];
         }
+        $mysqli->close();
         return $parent_id;
     }
 }

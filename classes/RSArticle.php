@@ -11,7 +11,15 @@ class RSArticle
     public $Content;
     public $Type;
 
-    public function __construct($id,$caption,$content,$type)
+    /**
+     * RSArticle конструткор.
+     *
+     * @param int $id
+     * @param string $caption
+     * @param string $content
+     * @param string $type
+     */
+    public function __construct($id, $caption, $content, $type)
     {
         $this->Id = $id;
         $this->Caption = $caption;
