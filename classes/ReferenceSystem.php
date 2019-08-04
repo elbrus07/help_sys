@@ -16,7 +16,7 @@ class ReferenceSystem
      * @param string $itemId id html элемента, документацию которого требуется получить
      * @return array|bool|string
      */
-    public static function GetItemReference($itemId)
+    public static function GetReferenceOfHTMLItem($itemId)
     {
         $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
         if($mysqli->connect_errno)
@@ -75,6 +75,18 @@ class ReferenceSystem
     }
 
     /**
+     * Получить статью по пути
+     *
+     * @param string $path
+     * @return RSArticle|string
+     */
+    public static function GetArticleByPath($path)
+    {
+        $id = self::PathToId($path);
+        return self::GetArticleByDBId($id);
+    }
+
+    /**
      * Добавить статью в БД
      *
      * @param string $path путь в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
@@ -120,13 +132,57 @@ class ReferenceSystem
     }
 
     /**
+     * Редактирование справки
+     *
+     * @param string $path
+     * @param string $newCaption
+     * @param string $newContent
+     * @return bool|string
+     */
+    public static function EditReference($path, $newCaption, $newContent)
+    {
+        $id = self::PathToId($path);
+        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        if($mysqli->connect_errno)
+            return "Ошибка: " . $mysqli->error . "\n";
+        $sql = "UPDATE ref_system_data SET caption = '$newCaption', content='$newContent' WHERE id=$id";
+        if (!$result = $mysqli->query($sql))
+            return "Ошибка: " . $mysqli->error . "\n";
+        $mysqli->close();
+        return true;
+    }
+
+    /**
+     * Удалить статью справки
+     *
+     * @param string $path
+     * @return bool|string
+     */
+    public static function RemoveReference($path)
+    {
+        $children = self::GetItemChildren($path);
+        for ($i = 0; $i < count($children); $i++)
+            self::RemoveReference($path . '/' . $children[$i]->Caption);
+
+        $id = self::PathToId($path);
+        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        if($mysqli->connect_errno)
+            return "Ошибка: " . $mysqli->error . "\n";
+        $sql = "DELETE FROM ref_system_data WHERE id=$id";
+        if (!$result = $mysqli->query($sql))
+            return "Ошибка: " . $mysqli->error . "\n";
+        $mysqli->close();
+        return true;
+    }
+
+    /**
      * Связать id HTML элемента со статьей
      *
-     * @param int $itemId id html элемента, к которому надо добавить статью
+     * @param string $itemId id html элемента, к которому надо добавить статью
      * @param string $path путь к статье в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
      * @return bool|string
      */
-    public static function AddReferenceToItem($itemId, $path)
+    public static function AddReferenceToHTMLItem($itemId, $path)
     {
         $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
         if($mysqli->connect_errno)
@@ -136,7 +192,51 @@ class ReferenceSystem
         $sql = "INSERT INTO ref_system_html_owners(element_id, data_id) VALUES('$itemId',$parentId)";
         if (!$result = $mysqli->query($sql))
             return "Ошибка: " . $mysqli->error . "\n";
+        $mysqli->close();
         return true;
+    }
+
+    /**
+     * Удалить связь (id HTML элменента <-> статья)
+     *
+     * @param $itemId
+     * @param $path
+     * @return bool|string
+     */
+    public static function RemoveReferenceOfHTMLItem($itemId, $path)
+    {
+        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        if($mysqli->connect_errno)
+            return "Ошибка: " . $mysqli->error . "\n";
+        $itemId = $mysqli->real_escape_string($itemId);
+        $parentId = self::PathToId($mysqli->real_escape_string($path));
+        $sql = "DELETE FROM ref_system_html_owners WHERE element_id = '$itemId' AND data_id=$parentId";
+        if (!$result = $mysqli->query($sql))
+            return "Ошибка: " . $mysqli->error . "\n";
+        $mysqli->close();
+        return true;
+    }
+
+    /**
+     * Получить id HTML элементов, связанных со статьей
+     *
+     * @param string $path
+     * @return array|string
+     */
+    public static function GetHTMLItemsOfReference($path)
+    {
+        $id = self::PathToId($path);
+        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        if($mysqli->connect_errno)
+            return "Ошибка: " . $mysqli->error . "\n";
+        $sql = "SELECT element_id FROM ref_system_html_owners WHERE data_id=$id";
+        if (!$result = $mysqli->query($sql))
+            return "Ошибка: " . $mysqli->error . "\n";
+        $items = array();
+        for ($i = 0; $item = $result->fetch_assoc(); $i++)
+            $items[$i] = $item['element_id'];
+        $mysqli->close();
+        return $items;
     }
 
     /**
@@ -166,7 +266,7 @@ class ReferenceSystem
      * Получить массив детей элемента
      *
      * @param string $path
-     * @return array|string
+     * @return RSArticle[]|string
      */
     public static function GetItemChildren($path)
     {
@@ -190,7 +290,7 @@ class ReferenceSystem
      * Получение схемы оглавления. По факту практически обход в глубину
      *
      * @param array() $scheme
-     * @return ReferenceSchemeItem[]
+     * @return ReferenceSchemeItem[]|string
      */
     public static function GetReferenceScheme($scheme)
     {

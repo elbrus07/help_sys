@@ -26,4 +26,13 @@ class RSArticle
         $this->Content = $content;
         $this->Type = $type;
     }
+
+    public function toJSON()
+    {
+        return json_encode(['Id' => $this->Id,
+                    'Caption' => $this->Caption,
+                    'Content' => $this->Content,
+                    'Type' => $this->Type
+            ]);
+    }
 }

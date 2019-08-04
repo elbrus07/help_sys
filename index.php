@@ -6,12 +6,12 @@
 <head>
     <title>Тест форм</title>
     <meta charset="UTF-8">
-    <style>
+    <style type="text/css">
         html,
         body {
             height: 97%;
             margin: 0;
-            padding: 0;
+            padding: 5px;
         }
         #RefContainer {
             overflow: hidden;
@@ -21,6 +21,7 @@
             height: 50%;
             margin-left: 10px;
             margin-right: 10px;
+            border-radius: 0px 0px 10px 10px;
 
         }
         #TableOfContentsContainer {
@@ -39,14 +40,16 @@
             padding: 0px 8px 0px 8px;
         }
         #Search {
+            border-radius: 10px 10px 0px 0px;
             display: flex;
             justify-content: space-between;
             border: 3px solid black;
             margin-left: 10px;
             margin-right: 10px;
-            padding: 2px 12px 2px 12px;
+            padding: 8px 12px 2px 12px;
             background-color: black;
             text-align: right;
+            vertical-align: center;
         }
         #TableOfContents {
             list-style-type: none;
@@ -92,23 +95,23 @@
 <body>
     <!-- Когда-нибудь здесь будет выходная форма для тестов -->
 
-        <div id="Search">
-            <div id="helpHeader">
-                Справка
-            </div>
-            <form>
-                <span style="color: white">Поиск: </span>
-                <input type="text" name="searchText" id="searchText">
-                <input type="submit" value="Найти" id="searchButton">
-            </form>
+    <div id="Search">
+        <div id="helpHeader">
+            Справка
         </div>
+        <form>
+            <span style="color: white">Поиск: </span>
+            <input type="text" name="searchText" id="searchText">
+            <input type="submit" value="Найти" id="searchButton">
+        </form>
+    </div>
     <div id="RefContainer">
         <div id="TableOfContentsContainer">
             <ul id="TableOfContents">
                 <?php
                 $sch = ReferenceSystem\ReferenceSystem::GetReferenceScheme(array());
                 for($i = 0; $i<count($sch); $i++)
-                    PrintVertex($sch[$i], 0);
+                    PrintVertex($sch[$i]);
                 ?>
             </ul>
         </div>
@@ -136,6 +139,7 @@
 function PrintVertex($Vertex)
 {
     //Сохраняем текущий запрос
+    $query = '';
     if(isset($_GET['searchText']) != '')
         $query = '&' . http_build_query(array_merge(array('searchText' => $_GET['searchText'])));
 
@@ -159,7 +163,10 @@ function PrintVertex($Vertex)
     }
     else
         //Если не задан поисковый запрос
-        echo '<li><a href="?page_id=' . $Vertex->Article->Id . $query . '">' . $Vertex->Article->Caption . '</a>' . "</li>\r\n";
+        if(isset($_GET['page_id']) and $_GET['page_id'] == $Vertex->Article->Id)
+            echo '<li><a style="text-decoration: underline" href="?page_id=' . $Vertex->Article->Id . $query . '">' . $Vertex->Article->Caption . '</a>' . "</li>\r\n";
+        else
+            echo '<li><a href="?page_id=' . $Vertex->Article->Id . $query . '">' . $Vertex->Article->Caption . '</a>' . "</li>\r\n";
     for($i = 0; $i<count($Vertex->Children); $i++)
     {
         echo "<ul>\r\n";

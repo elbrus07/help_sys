@@ -16,7 +16,7 @@ class ReferenceSchemeItem
      * ReferenceSchemeItem конструктор.
      *
      * @param RSArticle $article
-     * @param ReferenceSchemeItem $children
+     * @param ReferenceSchemeItem[] $children
      * @param ReferenceSchemeItem[] $firstLevel
      * @param string $path
      */
