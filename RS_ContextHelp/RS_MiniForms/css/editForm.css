@@ -1,0 +1,32 @@
+.eF_ItemContainer {
+    text-align: left;
+    border: 1px solid black;
+    border-top: 3px solid black;
+    border-radius: 0 0 15px 15px;
+    padding: 20px 0px 20px 0px;
+    height: 40%;
+    overflow: auto;
+    background: white;
+}
+.eF_ItemHeader {
+    border-bottom: 3px solid black;
+    text-align: center;
+    vertical-align: center;
+    font-size: 35px;
+    font-weight: bold;
+    height: 15%;
+}
+.eF_ItemForm {
+    padding: 5px;
+    margin: 5px;
+    height: 85%;
+    overflow: hidden;
+}
+.eF_ItemForm select, .eF_ItemForm input, .eF_ItemForm textarea
+{
+    margin-bottom: 3px;
+}
+.eF_ItemForm textarea {
+    width: 420px;
+    height: 120px;
+}

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Авг 04 2019 г., 17:25
+-- Время создания: Авг 07 2019 г., 19:38
 -- Версия сервера: 8.0.15
 -- Версия PHP: 7.1.22
 
@@ -50,9 +50,15 @@ INSERT INTO `ref_system_data` (`id`, `type`, `parent_id`, `caption`, `content`) 
 (32, 'Subsection', 22, 'раздел1', 'asdadasd'),
 (34, 'Chapter', NULL, 'Сказки', 'Тут будут сказки'),
 (35, 'Section', 34, 'А. С. Пушкин', 'Пушкин вообще топ автор<br>\r\nТут его биография'),
-(36, 'Subsection', 35, 'Сказка о рыбаке и рыбке', '<b>Сказка о рыбаке и рыбке</b>\r\nЖил старик со своею старухой<br>\r\nУ самого синего моря;<br>\r\nОни жили в ветхой землянке<br>\r\nРовно тридцать лет и три года.<br>\r\nСтарик ловил неводом рыбу,<br>\r\nСтаруха пряла свою пряжу.<br>\r\nРаз он в море закинул невод, —<br>\r\nПришел невод с одною тиной.<br>\r\nОн в другой раз закинул невод,<br>\r\nПришел невод с травой морскою.<br>\r\nВ третий раз закинул он невод, —<br>\r\nПришел невод с одною рыбкой,<br>\r\nС непростою рыбкой, — золотою.<br>\r\nКак взмолится золотая рыбка!<br>\r\nГолосом молвит человечьим:<br>\r\n«Отпусти ты, старче, меня в море,<br>\r\nДорогой за себя дам откуп:<br>\r\nОткуплюсь чем только пожелаешь.»<br>\r\nУдивился старик, испугался:<br>\r\nОн рыбачил тридцать лет и три года<br>\r\nИ не слыхивал, чтоб рыба говорила.<br>'),
-(40, 'Section', 17, 'razd2', ''),
-(45, 'Section', 34, 'Тест', '');
+(36, 'Subsection', 35, 'Сказка о рыбаке и рыбке', '                                                <b>Сказка о рыбаке и рыбке</b>\r\nЖил старик со своею старухой<br>\r\nУ самого синего моря;<br>\r\nОни жили в ветхой землянке<br>\r\nРовно тридцать лет и три года.<br>\r\nСтарик ловил неводом рыбу,<br>\r\nСтаруха пряла свою пряжу.<br>\r\nРаз он в море закинул невод, —<br>\r\nПришел невод с одною тиной.<br>\r\nОн в другой раз закинул невод,<br>\r\nПришел невод с травой морскою.<br>\r\nВ третий раз закинул он невод, —<br>\r\nПришел невод с одною рыбкой,<br>\r\nС непростою рыбкой, — золотою.<br>\r\nКак взмолится золотая рыбка!<br>\r\nГолосом молвит человечьим:<br>\r\n«Отпусти ты, старче, меня в море,<br>\r\nДорогой за себя дам откуп:<br>\r\nОткуплюсь чем только пожелаешь.»<br>\r\nУдивился старик, испугался:<br>\r\nОн рыбачил тридцать лет и три года<br>\r\nИ не слыхивал, чтоб рыба говорила.<br>                                '),
+(45, 'Section', 34, 'Тест', ''),
+(79, 'Chapter', NULL, 'Аэропорт', ''),
+(80, 'Section', 79, 'Ввод данных', ''),
+(81, 'Section', 79, 'Вывод данных', ''),
+(82, 'Subsection', 81, 'Меню вывода данных', 'Здесь что-то о меню вывода данных<br>\r\nasdasdadadadadasdasdasd'),
+(83, 'Subsection', 80, 'Меню ввода данных', 'asdasdaddsadasdasdsadasdasdsad<br>\r\n<b>asdasdadasdczczxczczcxzcvbcvbxcvb</b>'),
+(84, 'Subsection', 81, 'Работа с содержимым', 'ячсмячсмячсмячмячсмячсмячмямяямчясмячмячмчямчясм'),
+(85, 'Subsection', 80, 'Работа с содержимым', 'еншегншенгшенгшенгшенгшеншнегшшенгшенгшгнешгеншенгш');
 
 -- --------------------------------------------------------
 
@@ -62,6 +68,8 @@ INSERT INTO `ref_system_data` (`id`, `type`, `parent_id`, `caption`, `content`) 
 
 CREATE TABLE `ref_system_html_owners` (
   `element_id` varchar(64) NOT NULL,
+  `uniqueClass` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `pathname` varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '$(location).attr(''pathname'')',
   `data_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -69,9 +77,11 @@ CREATE TABLE `ref_system_html_owners` (
 -- Дамп данных таблицы `ref_system_html_owners`
 --
 
-INSERT INTO `ref_system_html_owners` (`element_id`, `data_id`) VALUES
-('textBoxInput1', 23),
-('textBoxInput2', 27);
+INSERT INTO `ref_system_html_owners` (`element_id`, `uniqueClass`, `pathname`, `data_id`) VALUES
+('menu1', '', '/test_context_help.php', 82),
+('menu2', '', '/test_context_help.php', 83),
+('dataeditor', 'RS_D1', '/test_context_help.php', 84),
+('dataeditor', 'RS_D2', '/test_context_help.php', 85);
 
 --
 -- Индексы сохранённых таблиц
@@ -88,8 +98,8 @@ ALTER TABLE `ref_system_data`
 -- Индексы таблицы `ref_system_html_owners`
 --
 ALTER TABLE `ref_system_html_owners`
-  ADD PRIMARY KEY (`element_id`),
-  ADD KEY `data_id` (`data_id`);
+  ADD PRIMARY KEY (`element_id`,`uniqueClass`,`pathname`),
+  ADD KEY `ref_system_html_owners_ibfk_1` (`data_id`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
@@ -99,7 +109,7 @@ ALTER TABLE `ref_system_html_owners`
 -- AUTO_INCREMENT для таблицы `ref_system_data`
 --
 ALTER TABLE `ref_system_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
@@ -109,7 +119,7 @@ ALTER TABLE `ref_system_data`
 -- Ограничения внешнего ключа таблицы `ref_system_html_owners`
 --
 ALTER TABLE `ref_system_html_owners`
-  ADD CONSTRAINT `ref_system_html_owners_ibfk_1` FOREIGN KEY (`data_id`) REFERENCES `ref_system_data` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `ref_system_html_owners_ibfk_1` FOREIGN KEY (`data_id`) REFERENCES `ref_system_data` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

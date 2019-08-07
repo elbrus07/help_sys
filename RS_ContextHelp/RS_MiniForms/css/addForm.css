@@ -1,0 +1,35 @@
+.aF_ItemContainer {
+    display: none;
+}
+.aF_ItemContainer, .aF_Menu {
+    text-align: left;
+    border: 1px solid black;
+    border-top: 3px solid black;
+    border-radius: 0 0 15px 15px;
+    padding: 20px 5px 20px 5px;
+    height: 40%;
+    overflow: auto;
+    background: white;
+}
+.aF_ItemHeader {
+    border-bottom: 3px solid black;
+    text-align: center;
+    vertical-align: center;
+    font-size: 35px;
+    font-weight: bold;
+    height: 15%;
+}
+.aF_ItemForm {
+    padding: 5px;
+    margin: 5px;
+    height: 85%;
+    overflow: hidden;
+}
+.aF_ItemForm select, .aF_ItemForm input, .aF_ItemForm textarea
+{
+    margin-bottom: 3px;
+}
+.aF_ItemForm textarea {
+    width: 98%;
+    height: 120px;
+}

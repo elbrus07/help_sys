@@ -91,11 +91,14 @@
             font-size: 20px;
         }
     </style>
+    <!-- Подключение модуля контекстных подсказок -->
+    <link rel="stylesheet" href="/RS_ContextHelp/css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/RS_ContextHelp/js/context_reference.js"></script>
 </head>
 <body>
     <!-- Когда-нибудь здесь будет выходная форма для тестов -->
-
-    <div id="Search">
+    <div id="Search" class="RS_Help">
         <div id="helpHeader">
             Справка
         </div>
@@ -105,7 +108,7 @@
             <input type="submit" value="Найти" id="searchButton">
         </form>
     </div>
-    <div id="RefContainer">
+    <div id="RefContainer" class="RS_Help class1 class2 RS_D1">
         <div id="TableOfContentsContainer">
             <ul id="TableOfContents">
                 <?php

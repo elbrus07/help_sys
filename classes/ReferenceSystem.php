@@ -1,5 +1,6 @@
 <?php
 namespace ReferenceSystem;
+use \mysqli;
 
 include_once ($_SERVER['DOCUMENT_ROOT'].'/settings/dblogin.php');
 include_once 'RSArticle.php';
@@ -14,15 +15,18 @@ class ReferenceSystem
      * Получить статью, относящуюся к HTML элементу с заданным id
      *
      * @param string $itemId id html элемента, документацию которого требуется получить
-     * @return array|bool|string
+     * @param string $uniqueClass уникальный класс элемента (если более одного элемента с одинаковыми id на странице)
+     * @param string $pathname путь к файлу, в котором вызывается справка ($(location).attr('pathname'))
+     * @return RSArticle[]|bool|string
      */
-    public static function GetReferenceOfHTMLItem($itemId)
+    public static function GetReferenceOfHTMLItem($itemId, $uniqueClass, $pathname)
     {
-        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
         $itemId = $mysqli->real_escape_string($itemId);
-        $sql = "SELECT data_id FROM ref_system_html_owners WHERE element_id = '$itemId'";
+        $sql = "SELECT data_id FROM ref_system_html_owners WHERE element_id = '$itemId' AND uniqueClass='$uniqueClass'" .
+               " AND pathname = '$pathname'";
         if(!$result = $mysqli->query($sql))
             return "Ошибка: " . $mysqli->error . "\n";
 
@@ -50,6 +54,7 @@ class ReferenceSystem
         $arr = array();
         for($i = 0; $obj = $result->fetch_assoc(); $i++)
             $arr[$i] = new RSArticle($obj['id'],$obj['caption'],$obj['content'],$obj['type']);
+        $mysqli->close();
         return $arr;
     }
 
@@ -60,7 +65,7 @@ class ReferenceSystem
      */
     public static function GetArticleByDBId($id)
     {
-        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
         $id = $mysqli->real_escape_string($id);
@@ -92,11 +97,11 @@ class ReferenceSystem
      * @param string $path путь в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
      *              причем (n*Sub)section будет заголовком будущей статьи
      * @param string $content содержимаое статьи (скажем, html код). Идею с содержимым мб надо доработать
-     * @return bool|string
+     * @return int|string
      */
     public static function AddReference($path, $content)
     {
-        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
         if ($mysqli->connect_errno)
             return false;
         $path = $mysqli->real_escape_string($path);
@@ -128,21 +133,23 @@ class ReferenceSystem
             if (!$result = $mysqli->query($sql))
                 return "Ошибка: " . $mysqli->error . "\n";
         }
-        return true;
+        $last_id = $mysqli->insert_id;
+        $mysqli->close();
+        return $last_id;
     }
 
     /**
      * Редактирование справки
      *
-     * @param string $path
+     * @param string|int $pathOrId
      * @param string $newCaption
      * @param string $newContent
      * @return bool|string
      */
-    public static function EditReference($path, $newCaption, $newContent)
+    public static function EditReference($pathOrId, $newCaption, $newContent)
     {
-        $id = self::PathToId($path);
-        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        $id = (is_numeric($pathOrId)) ? $pathOrId : self::PathToId($pathOrId);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
         $sql = "UPDATE ref_system_data SET caption = '$newCaption', content='$newContent' WHERE id=$id";
@@ -155,17 +162,17 @@ class ReferenceSystem
     /**
      * Удалить статью справки
      *
-     * @param string $path
+     * @param string|int $pathOrId
      * @return bool|string
      */
-    public static function RemoveReference($path)
+    public static function RemoveReference($pathOrId)
     {
-        $children = self::GetItemChildren($path);
+        $children = self::GetItemChildren($pathOrId);
         for ($i = 0; $i < count($children); $i++)
-            self::RemoveReference($path . '/' . $children[$i]->Caption);
+            self::RemoveReference($children[$i]->Id);
 
-        $id = self::PathToId($path);
-        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        $id = (is_numeric($pathOrId)) ? $pathOrId : self::PathToId($pathOrId);
+        $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
         $sql = "DELETE FROM ref_system_data WHERE id=$id";
@@ -179,17 +186,23 @@ class ReferenceSystem
      * Связать id HTML элемента со статьей
      *
      * @param string $itemId id html элемента, к которому надо добавить статью
-     * @param string $path путь к статье в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
+     * @param string|int $pathOrId путь к статье (или ее id) в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
+     * @param string $uniqueClass уникальный класс элемента (если более одного элемента с одинаковыми id на странице)
+     * @param string $pathname путь к файлу, в котором вызывается справка ($(location).attr('pathname'))
      * @return bool|string
      */
-    public static function AddReferenceToHTMLItem($itemId, $path)
+    public static function AddReferenceToHTMLItem($itemId, $uniqueClass, $pathname, $pathOrId)
     {
-        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
         $itemId = $mysqli->real_escape_string($itemId);
-        $parentId = self::PathToId($mysqli->real_escape_string($path));
-        $sql = "INSERT INTO ref_system_html_owners(element_id, data_id) VALUES('$itemId',$parentId)";
+        $uniqueClass = $mysqli->real_escape_string($uniqueClass);
+        $pathname = $mysqli->real_escape_string($pathname);
+
+        $parentId = (is_numeric($pathOrId)) ? $pathOrId : self::PathToId($mysqli->real_escape_string($pathOrId));
+        $sql = "INSERT INTO ref_system_html_owners(element_id, uniqueClass, pathname, data_id) " .
+               "VALUES('$itemId', '$uniqueClass', '$pathname', $parentId)";
         if (!$result = $mysqli->query($sql))
             return "Ошибка: " . $mysqli->error . "\n";
         $mysqli->close();
@@ -199,18 +212,21 @@ class ReferenceSystem
     /**
      * Удалить связь (id HTML элменента <-> статья)
      *
-     * @param $itemId
-     * @param $path
+     * @param string $itemId
+     * @param string|int $pathOrId
+     * @param string $uniqueClass
+     * @param string $pathname
      * @return bool|string
      */
-    public static function RemoveReferenceOfHTMLItem($itemId, $path)
+    public static function RemoveReferenceOfHTMLItem($itemId, $uniqueClass, $pathname, $pathOrId)
     {
-        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
         $itemId = $mysqli->real_escape_string($itemId);
-        $parentId = self::PathToId($mysqli->real_escape_string($path));
-        $sql = "DELETE FROM ref_system_html_owners WHERE element_id = '$itemId' AND data_id=$parentId";
+        $parentId = (is_numeric($pathOrId)) ? $pathOrId : self::PathToId($mysqli->real_escape_string($pathOrId));
+        $sql = "DELETE FROM ref_system_html_owners WHERE element_id = '$itemId' AND uniqueClass = '$uniqueClass' " .
+               "AND pathname = '$pathname' AND data_id= '$parentId'";
         if (!$result = $mysqli->query($sql))
             return "Ошибка: " . $mysqli->error . "\n";
         $mysqli->close();
@@ -220,21 +236,25 @@ class ReferenceSystem
     /**
      * Получить id HTML элементов, связанных со статьей
      *
-     * @param string $path
+     * @param string|int $pathOrId
      * @return array|string
      */
-    public static function GetHTMLItemsOfReference($path)
+    public static function GetHTMLItemsOfReference($pathOrId)
     {
-        $id = self::PathToId($path);
-        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        $id = (is_numeric($pathOrId)) ? $pathOrId : self::PathToId($pathOrId);
+        $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
-        $sql = "SELECT element_id FROM ref_system_html_owners WHERE data_id=$id";
+        $sql = "SELECT element_id, uniqueClass, pathname FROM ref_system_html_owners WHERE data_id=$id";
         if (!$result = $mysqli->query($sql))
             return "Ошибка: " . $mysqli->error . "\n";
         $items = array();
         for ($i = 0; $item = $result->fetch_assoc(); $i++)
-            $items[$i] = $item['element_id'];
+        {
+            $items['element_id'][$i] = $item['element_id'];
+            $items['uniqueClass'][$i] = $item['uniqueClass'];
+            $items['pathname'][$i] = $item['pathname'];
+        }
         $mysqli->close();
         return $items;
     }
@@ -247,7 +267,7 @@ class ReferenceSystem
      */
     public static function SearchReference($searchString)
     {
-        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
         $searchString = $mysqli->real_escape_string($searchString);
@@ -265,15 +285,15 @@ class ReferenceSystem
     /**
      * Получить массив детей элемента
      *
-     * @param string $path
+     * @param string|int $pathOrId
      * @return RSArticle[]|string
      */
-    public static function GetItemChildren($path)
+    public static function GetItemChildren($pathOrId)
     {
-        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
-        $id = self::PathToId($path);
+        $id = (is_numeric($pathOrId)) ? $pathOrId : self::PathToId($pathOrId);
         $sql = "SELECT id,type,caption FROM ref_system_data WHERE parent_id = $id";
         if(!$result = $mysqli->query($sql))
             return "Ошибка: " . $mysqli->error . "\n";
@@ -296,7 +316,7 @@ class ReferenceSystem
     {
         if(count($scheme) === 0)
         {
-            $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+            $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
             if($mysqli->connect_errno)
                 return "Ошибка: " . $mysqli->error . "\n";
             $type = self::$HierarchyItems[0];
@@ -339,9 +359,9 @@ class ReferenceSystem
      * @param string $path путь к статье в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
      * @return int|string
      */
-    private static function PathToId($path)
+    public static function PathToId($path)
     {
-        $mysqli = new \mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
         $path = $mysqli->real_escape_string($path);
@@ -360,5 +380,31 @@ class ReferenceSystem
         }
         $mysqli->close();
         return $parent_id;
+    }
+
+    /**
+     * Конвертирование id статьи в бд в путь к ней
+     *
+     * @param int $id
+     * @return string
+     */
+    public static function IdToPath($id)
+    {
+        $mysqli = new mysqli(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_DATABASE);
+        if($mysqli->connect_errno)
+            return "Ошибка: " . $mysqli->error . "\n";
+        $id = $mysqli->real_escape_string($id);
+        $path = '';
+        for ($i=0;$id != null;$i++)
+        {
+            $sql = "SELECT caption,parent_id FROM ref_system_data WHERE id = $id";
+            if (!$result = $mysqli->query($sql))
+                return "Ошибка: " . $mysqli->error . "\n";
+            $result = $result->fetch_assoc();
+            $path = ($i == 0) ? $result['caption'] : $result['caption'] . "/$path";
+            $id = $result['parent_id'];
+        }
+        $mysqli->close();
+        return $path;
     }
 }

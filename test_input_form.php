@@ -43,12 +43,15 @@ include_once "classes/ReferenceSystem.php";
         {
             if($_POST['action'] == 'Добавить')
             {
-                if (isset($_POST['hidden_ep']) AND isset($_POST['HTMLelName'])
-                    AND $_POST['hidden_ep'] != '' AND $_POST['HTMLelName'] != '')
+                if (isset($_POST['hidden_ep']) AND isset($_POST['HTMLelId'])
+                    AND $_POST['hidden_ep'] != '' AND $_POST['HTMLelId'] != '' AND isset($_POST['uniqueClass'])
+                    AND isset($_POST['pathname']) AND $_POST['pathname'] != '')
                 {
                     $path = $_POST['hidden_ep'];
-                    $HTMLel = $_POST['HTMLelName'];
-                    ReferenceSystem\ReferenceSystem::AddReferenceToHTMLItem($HTMLel,$path);
+                    $HTMLel = $_POST['HTMLelId'];
+                    $uniqueClass = $_POST['uniqueClass'];
+                    $pathName = $_POST['pathname'];
+                    ReferenceSystem\ReferenceSystem::AddReferenceToHTMLItem($HTMLel,$uniqueClass,$pathName,$path);
                 }
             }
             elseif ($_POST['action'] == 'Удалить')
@@ -57,8 +60,11 @@ include_once "classes/ReferenceSystem.php";
                     AND $_POST['hidden_ep'] != '' AND $_POST['HTMLChildrenList'] != '')
                 {
                     $path = $_POST['hidden_ep'];
-                    $HTMLel = $_POST['HTMLChildrenList'];
-                    echo ReferenceSystem\ReferenceSystem::RemoveReferenceOfHTMLItem($HTMLel, $path);
+                    $arr = explode('||',$_POST['HTMLChildrenList']);
+                    $HTMLel = $arr[0];
+                    $uniqueClass = $arr[1];
+                    $pathName = $arr[2];
+                    ReferenceSystem\ReferenceSystem::RemoveReferenceOfHTMLItem($HTMLel,$uniqueClass,$pathName,$path);
                 }
             }
         }
@@ -147,8 +153,10 @@ include_once "classes/ReferenceSystem.php";
                 })
                     .done(function (result) {
                         result = JSON.parse(result);
-                        for (let i in result)
-                            $('#HTMLChildrenList').append('<option>'+result[i]+'</option>');
+                        for (let i in result.element_id)
+                            $('#HTMLChildrenList').append('<option value="'+ result.element_id[i] +
+                                '||' + result.uniqueClass[i] + '||' + result.pathname[i] +
+                                '">'+result.element_id[i]+'</option>');
                     })
                     .fail(function () {
 
@@ -215,6 +223,7 @@ include_once "classes/ReferenceSystem.php";
             </div>
             <br>
         </form>
+        <!-- Связанные статьи -->
         <form id="ItemForm" method="POST">
             <input type="hidden" name="mode" value="HTMLChildren">
             <input type="hidden" name="hidden_ep" id="hidden_ep" value="">
@@ -227,7 +236,18 @@ include_once "classes/ReferenceSystem.php";
             <br>
             Id HTML элемента для добавления:
             <br>
-            <input type="text" name="HTMLelName">
+            <input type="text" name="HTMLelId">
+            <br>
+            Уникальный класс (если Id элемента не единственный на странице<br>
+            в формате RS_D&lt;число&gt;:
+            <br>
+            <input type="text" name="uniqueClass" placeholder="RS_D">
+            <br>
+            Путь к файлу, содержащий HTML элемент<br>
+            (напр.: /, или /subfolder/subsubfolder/file.php, или /file.php):
+            <br>
+            <input type="text" name="pathname" value="/">
+            <br>
             <input type="submit" value="Добавить" name="action">
         </form>
     </div>

@@ -1,0 +1,26 @@
+/* Кнопка получения формы контекстной справки */
+.RS_InfoButton {
+    background: url("icons/help.png") center no-repeat;
+    border: 1px solid #7a7b7e;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    text-align: center;
+    vert-align: middle;
+    position: absolute;
+    cursor: pointer;
+}
+/* Кнопка закрытия формы контекстной справки */
+.RS_FormClose {
+    background: url("icons/close.png") center no-repeat;
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+    border-radius: 3px;
+    text-align: center;
+    margin-left: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 5px;
+    cursor: pointer;
+}
