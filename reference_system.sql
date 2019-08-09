@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Авг 07 2019 г., 19:38
+-- Время создания: Авг 09 2019 г., 20:23
 -- Версия сервера: 8.0.15
 -- Версия PHP: 7.1.22
 
@@ -47,15 +47,14 @@ INSERT INTO `ref_system_data` (`id`, `type`, `parent_id`, `caption`, `content`) 
 (23, 'Section', 18, 'секция2', 'еще текст'),
 (27, 'Subsection', 23, 'раздел1', 'буквы'),
 (28, 'Subsection', 23, 'раздел2', '<h1>Заголовок<br>первого уровня</h1>\r\n<h2>Заголовок второго уровня</h2>\r\n<h3>Заголовок третьего уровня</h3>\r\n<h4>Заголовок четвертого уровня</h4>\r\n<h5>Заголовок пятого уровня</h5>\r\n<h6>Заголовок шестого уровня</h6>'),
-(32, 'Subsection', 22, 'раздел1', 'asdadasd'),
+(32, 'Subsection', 22, 'раздел1', 'asdadasd1212'),
 (34, 'Chapter', NULL, 'Сказки', 'Тут будут сказки'),
 (35, 'Section', 34, 'А. С. Пушкин', 'Пушкин вообще топ автор<br>\r\nТут его биография'),
-(36, 'Subsection', 35, 'Сказка о рыбаке и рыбке', '                                                <b>Сказка о рыбаке и рыбке</b>\r\nЖил старик со своею старухой<br>\r\nУ самого синего моря;<br>\r\nОни жили в ветхой землянке<br>\r\nРовно тридцать лет и три года.<br>\r\nСтарик ловил неводом рыбу,<br>\r\nСтаруха пряла свою пряжу.<br>\r\nРаз он в море закинул невод, —<br>\r\nПришел невод с одною тиной.<br>\r\nОн в другой раз закинул невод,<br>\r\nПришел невод с травой морскою.<br>\r\nВ третий раз закинул он невод, —<br>\r\nПришел невод с одною рыбкой,<br>\r\nС непростою рыбкой, — золотою.<br>\r\nКак взмолится золотая рыбка!<br>\r\nГолосом молвит человечьим:<br>\r\n«Отпусти ты, старче, меня в море,<br>\r\nДорогой за себя дам откуп:<br>\r\nОткуплюсь чем только пожелаешь.»<br>\r\nУдивился старик, испугался:<br>\r\nОн рыбачил тридцать лет и три года<br>\r\nИ не слыхивал, чтоб рыба говорила.<br>                                '),
-(45, 'Section', 34, 'Тест', ''),
+(36, 'Subsection', 35, 'Сказка о рыбаке и рыбке', '<b>Сказка о рыбаке и рыбке</b>\r\nЖил старик со своею старухой<br>\r\nУ самого синего моря;<br>\r\nОни жили в ветхой землянке<br>\r\nРовно тридцать лет и три года.<br>\r\nСтарик ловил неводом рыбу,<br>\r\nСтаруха пряла свою пряжу.<br>\r\nРаз он в море закинул невод, —<br>\r\nПришел невод с одною тиной.<br>\r\nОн в другой раз закинул невод,<br>\r\nПришел невод с травой морскою.<br>\r\nВ третий раз закинул он невод, —<br>\r\nПришел невод с одною рыбкой,<br>\r\nС непростою рыбкой, — золотою.<br>\r\nКак взмолится золотая рыбка!<br>\r\nГолосом молвит человечьим:<br>\r\n«Отпусти ты, старче, меня в море,<br>\r\nДорогой за себя дам откуп:<br>\r\nОткуплюсь чем только пожелаешь.»<br>\r\nУдивился старик, испугался:<br>\r\nОн рыбачил тридцать лет и три года<br>\r\nИ не слыхивал, чтоб рыба говорила.<br>                                '),
 (79, 'Chapter', NULL, 'Аэропорт', ''),
 (80, 'Section', 79, 'Ввод данных', ''),
 (81, 'Section', 79, 'Вывод данных', ''),
-(82, 'Subsection', 81, 'Меню вывода данных', 'Здесь что-то о меню вывода данных<br>\r\nasdasdadadadadasdasdasd'),
+(82, 'Subsection', 81, 'Меню вывода данных', 'Здесь что-то о меню вывода данных<br>\r\ndsdfsdfsfdfsf'),
 (83, 'Subsection', 80, 'Меню ввода данных', 'asdasdaddsadasdasdsadasdasdsad<br>\r\n<b>asdasdadasdczczxczczcxzcvbcvbxcvb</b>'),
 (84, 'Subsection', 81, 'Работа с содержимым', 'ячсмячсмячсмячмячсмячсмячмямяямчясмячмячмчямчясм'),
 (85, 'Subsection', 80, 'Работа с содержимым', 'еншегншенгшенгшенгшенгшеншнегшшенгшенгшгнешгеншенгш');
@@ -78,10 +77,30 @@ CREATE TABLE `ref_system_html_owners` (
 --
 
 INSERT INTO `ref_system_html_owners` (`element_id`, `uniqueClass`, `pathname`, `data_id`) VALUES
+('RefContainer', 'RS_D1', '/', 28),
 ('menu1', '', '/test_context_help.php', 82),
 ('menu2', '', '/test_context_help.php', 83),
 ('dataeditor', 'RS_D1', '/test_context_help.php', 84),
 ('dataeditor', 'RS_D2', '/test_context_help.php', 85);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `ref_system_users`
+--
+
+CREATE TABLE `ref_system_users` (
+  `id` int(11) NOT NULL,
+  `username` varchar(25) NOT NULL,
+  `password_hash` varchar(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `ref_system_users`
+--
+
+INSERT INTO `ref_system_users` (`id`, `username`, `password_hash`) VALUES
+(1, 'admin', '7c4a8d09ca3762af61e59520943dc26494f8941b');
 
 --
 -- Индексы сохранённых таблиц
@@ -102,6 +121,12 @@ ALTER TABLE `ref_system_html_owners`
   ADD KEY `ref_system_html_owners_ibfk_1` (`data_id`);
 
 --
+-- Индексы таблицы `ref_system_users`
+--
+ALTER TABLE `ref_system_users`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT для сохранённых таблиц
 --
 
@@ -109,7 +134,13 @@ ALTER TABLE `ref_system_html_owners`
 -- AUTO_INCREMENT для таблицы `ref_system_data`
 --
 ALTER TABLE `ref_system_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+
+--
+-- AUTO_INCREMENT для таблицы `ref_system_users`
+--
+ALTER TABLE `ref_system_users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц

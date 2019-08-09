@@ -1,0 +1,109 @@
+#RS_DataContainer {
+    background-color: #bad0f1;
+    box-shadow: inset 0px 4px 9px 0px rgba(0, 0, 0, 0.35);
+    border-radius: 0 0 15px 15px;
+}
+
+#RS_RefContainer {
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    margin-left: 1px;
+    margin-right: 1px;
+    width: 500px;
+    height: 250px;
+    max-width: 600px;
+    max-height: 300px;
+
+}
+#RS_TableOfContentsContainer {
+    overflow: auto;
+    border: 3px solid black;
+    height: 100%;
+    width: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
+    display: none;
+}
+#RS_Content {
+    overflow: auto;
+    height: 98%;
+    width: 100%;
+    padding: 0px 8px 0px 8px;
+}
+#RS_Search {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid gray;
+    background-color: rgb(106, 160, 240);
+    margin-left: 1px;
+    margin-right: 1px;
+    padding: 8px 12px 2px 12px;
+    text-align: right;
+    vertical-align: middle;
+}
+#RS_TableOfContents {
+    list-style-type: none;
+    margin: 5px 0px 5px 0px;
+    padding: 0px;
+
+}
+#RS_TableOfContents li {
+    border-bottom: 1px solid gray;
+}
+
+
+#RS_TableOfContents ul {
+    list-style-type: none;
+}
+#RS_searchText {
+    border: 1px solid gray;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: inset 0px 0px 6.75px 2.25px rgba(0, 0, 0, 0.23);
+    padding: 3px 10px 3px 10px;
+    height: 20px;
+}
+#RS_searchButton {
+    border-radius: 10px;
+    border: 1px solid gray;
+    background-color: white;
+    height: 28px;
+    padding: 3px 10px 3px 10px;
+    cursor: pointer;
+}
+
+#RS_searchButton:hover {
+    box-shadow: inset 0px 0px 6px 2px rgba(0, 0, 0, 0.54);
+}
+
+#RS_searchButton:active {
+    box-shadow: inset 0px 0px 14.91px 6.09px rgba(0, 0, 0, 0.54);
+}
+
+#RS_searchButton:active {
+    outline: none;
+}
+#RS_searchButton:focus,#RS_searchText:focus {
+    outline:0;
+    border-color: black;
+}
+#RS_RefContainer a {
+    color: black;
+    text-decoration: none;
+}
+#RS_RefContainer a:hover {
+    color: black;
+}
+#RS_TableOfContentsButton {
+    color: white;
+    font-size: 20px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#RS_TableOfContentsButton:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}

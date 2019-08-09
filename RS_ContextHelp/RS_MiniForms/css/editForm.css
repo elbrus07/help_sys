@@ -1,32 +1,127 @@
 .eF_ItemContainer {
-    text-align: left;
-    border: 1px solid black;
-    border-top: 3px solid black;
-    border-radius: 0 0 15px 15px;
-    padding: 20px 0px 20px 0px;
-    height: 40%;
-    overflow: auto;
-    background: white;
+    border-radius: 0 0 10px 10px;
+    background-color: #bad0f1;
+    box-shadow: inset 0px 4px 9px 0px rgba(0, 0, 0, 0.35);
+
+    margin: 0 1px 1px 1px ;
 }
 .eF_ItemHeader {
-    border-bottom: 3px solid black;
+    border-bottom: 1px solid black;
+    background-color: rgb(106, 160, 240);
+    margin-bottom: 5px;
+    padding-top: 9px;
     text-align: center;
-    vertical-align: center;
-    font-size: 35px;
-    font-weight: bold;
-    height: 15%;
+    min-height: 42px;
 }
+
+.eF_ItemContainerHeaderText {
+    font-family: "Segoe UI", sans-serif;
+    font-size: 18pt;
+    color: white;
+}
+
 .eF_ItemForm {
-    padding: 5px;
-    margin: 5px;
+    padding: 10px 20px 10px 20px;
+    color: black;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 14pt;
     height: 85%;
     overflow: hidden;
 }
 .eF_ItemForm select, .eF_ItemForm input, .eF_ItemForm textarea
-{
-    margin-bottom: 3px;
+ {
+     margin-bottom: 3px;
+ }
+
+.eF_ItemForm input {
+    margin-bottom: 5px;
 }
+
+.eF_ItemForm input[type=text]
+{
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: inset 0px 0px 6.75px 2.25px rgba(0, 0, 0, 0.23);
+    padding: 3px 10px 3px 10px;
+    width: calc(100% - 20px);
+    height: 20px;
+}
+
+.eF_ItemForm select {
+    box-sizing: content-box;
+    font-family: "Segoe UI", sans-serif;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: inset 0px 0px 6.75px 2.25px rgba(0, 0, 0, 0.23);
+    padding: 3px 10px 3px 10px;
+    width: 30%;
+    height: 20px;
+}
+
 .eF_ItemForm textarea {
-    width: 420px;
-    height: 120px;
+    border: 1px solid black;
+    background-color: white;
+    box-shadow: inset 0px 0px 6.75px 2.25px rgba(0, 0, 0, 0.23);
+    width: 100%;
+    height: 250px;
+}
+
+.eF_ItemForm select:active, .eF_ItemForm textarea:active {
+    outline: none;
+    border: none;
+}
+
+.eF_mainButton {
+    border: 1px solid black;
+    background-color: white;
+    padding: 3px 10px 3px 10px;
+    min-width: 30%;
+    height: 35px;
+}
+
+.eF_mainButton:hover {
+    border: 1px solid black;
+    background-color: white;
+    box-shadow: inset 0px 0px 6px 2px rgba(0, 0, 0, 0.54);
+    padding: 3px 10px 3px 10px;
+    min-width: 30%;
+    height: 35px;
+}
+
+.eF_mainButton:active {
+    border: 1px solid black;
+    background-color: white;
+    box-shadow: inset 0px 0px 14.91px 6.09px rgba(0, 0, 0, 0.54);
+    padding: 3px 10px 3px 10px;
+    height: 35px;
+    min-width: 30%;
+    outline: none;
+}
+
+.eF_Button {
+    border: 1px solid black;
+    background-color: white;
+    padding: 3px 10px 3px 10px;
+    width: 25%;
+    height: 28px;
+}
+
+.eF_Button:hover {
+    border: 1px solid black;
+    background-color: white;
+    box-shadow: inset 0px 0px 6px 2px rgba(0, 0, 0, 0.54);
+    padding: 3px 10px 3px 10px;
+    width: 25%;
+    height: 28px;
+}
+
+.eF_Button:active {
+    border: 1px solid black;
+    background-color: white;
+    box-shadow: inset 0px 0px 14.91px 6.09px rgba(0, 0, 0, 0.54);
+    padding: 3px 10px 3px 10px;
+    width: 25%;
+    height: 28px;
 }

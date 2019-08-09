@@ -251,9 +251,9 @@ class ReferenceSystem
         $items = array();
         for ($i = 0; $item = $result->fetch_assoc(); $i++)
         {
-            $items['element_id'][$i] = $item['element_id'];
-            $items['uniqueClass'][$i] = $item['uniqueClass'];
-            $items['pathname'][$i] = $item['pathname'];
+            $items[$i]['element_id'] = $item['element_id'];
+            $items[$i]['uniqueClass'] = $item['uniqueClass'];
+            $items[$i]['pathname'] = $item['pathname'];
         }
         $mysqli->close();
         return $items;

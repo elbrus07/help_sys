@@ -14,38 +14,31 @@ if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniq
     <script src="/RS_ContextHelp/RS_MiniForms/js/editForm.js"></script>
     <script>
         $(document).ready(function () {
+            //Обработка клика на добавление статьи
             $('#aF_NewArticle').click(function (event) {
                 event.preventDefault();
                 $('#aF_AddContainer').css('display','block');
                 $('.aF_Menu').css('display', 'none');
             });
 
+            //Обработка клика на привязку к родителю
             $('#aF_NewParent').click(function (event) {
                 event.preventDefault();
                 $('#aF_HTMLChildrenContainer').css('display','block');
                 $('.aF_Menu').css('display', 'none');
             });
 
+            //Клик на добавление статьи
             $('#aF_AddContainer .aF_ItemForm input[type=submit]').click(function (event) {
                 event.preventDefault();
-                sendFormOnServer('#aF_AddContainer .aF_ItemForm','/RS_ContextHelp/RS_MiniForms/miniFormsActions.php')
+                sendFormOnServer('#aF_AddContainer .aF_ItemForm','/RS_API/api.php')
                     .done(function (article_id) {
-                        let html_id = $('#aF_HTML_ID').attr('value');
-                        $.ajax({
-                            method: 'POST',
-                            url: '/RS_ContextHelp/RS_MiniForms/miniFormsActions.php',
-                            data: {
-                                'mode': 'HTMLChildren',
-                                'action': 'Добавить',
-                                'HTMLelId': html_id,
-                                'uniqueClass': $('#aF_uniqueClass').attr('value'),
-                                // путь файлу (т.к. мы подключаем этот js, то путь будет к фалу, к которому
-                                // подключен js)
-                                'pathname': $(location).attr('pathname'),
-                                'parent': article_id
-                            }
-                        });
-                        location.reload();
+                        $('<option>', {
+                            value: article_id,
+                            selected: true
+                        }).appendTo($('#aF_HTMLChildrenContainer select'));
+
+                        $('#aF_HTMLChildrenContainer .aF_ItemForm input[type=submit]').trigger('click');
                     });
             });
 
@@ -56,7 +49,7 @@ if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniq
                     name: 'pathname',
                     value: $(location).attr('pathname')
                 }).appendTo($('#aF_HTMLChildrenContainer .aF_ItemForm'));
-                sendFormOnServer('#aF_HTMLChildrenContainer .aF_ItemForm','/RS_ContextHelp/RS_MiniForms/miniFormsActions.php')
+                sendFormOnServer('#aF_HTMLChildrenContainer .aF_ItemForm','/RS_API/api.php')
                     .done(function () {
                         location.reload();
                     });
@@ -75,10 +68,11 @@ if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniq
 <!-- Контейнер для добавления материала -->
 <div class="aF_ItemContainer" id="aF_AddContainer">
     <div class="aF_ItemHeader">
-        Добавление материала
+        <span class="aF_ItemContainerHeaderText">Добавление материала</span>
     </div>
-    <form class="aF_ItemForm" method="POST" action="/RS_ContextHelp/RS_MiniForms/miniFormsActions.php">
-        <input type="hidden" name="mode" value="addReference">
+    <form class="aF_ItemForm" method="POST">
+        <input type="hidden" name="mode" value="article">
+        <input type="hidden" name="action" value="add">
         Путь:
         <select name="path_p1">
             <option>...</option>
@@ -95,7 +89,7 @@ if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniq
         <br>
         <textarea name="content" id="input_content"></textarea>
         <br>
-        <input type="submit" value="Добавить">
+        <input type="submit" value="Добавить" class="aF_mainButton">
     </form>
 </div>
 <!-- Контейнер для привязки к родителю -->
@@ -103,13 +97,13 @@ if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniq
     <div class="aF_ItemHeader">
         Привязать родителя
     </div>
-    <form class="aF_ItemForm" method="POST" action="/RS_ContextHelp/RS_MiniForms/miniFormsActions.php">
-        <input type="hidden" name="mode" value="HTMLChildren">
-        <input type="hidden" name="action" value="Добавить">
+    <form class="aF_ItemForm" method="POST">
+        <input type="hidden" name="mode" value="html_children">
+        <input type="hidden" name="action" value="add">
         <input type="hidden" name="HTMLelId" value="<?php echo $_POST['html_id']; ?>">
         <input type="hidden" name="uniqueClass" value="<?php echo $_POST['uniqueClass']; ?>">
         Родитель:
-        <select name="parent">
+        <select name="pathOrId">
             <?php
             $sch = ReferenceSystem\ReferenceSystem::GetReferenceScheme(array());
             for($i = 0; $i<count($sch); $i++)
@@ -117,7 +111,7 @@ if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniq
             ?>
         </select>
         <br>
-        <input type="submit" value="Привязать">
+        <input type="submit" value="Привязать"  class="aF_mainButton">
     </form>
 </div>
 </body>

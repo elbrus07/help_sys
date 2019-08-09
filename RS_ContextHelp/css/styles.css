@@ -24,3 +24,10 @@
     margin-right: 5px;
     cursor: pointer;
 }
+
+#RSForm {
+    border: 2px solid black;
+    border-radius: 0 0 15px 15px;
+    background-color: rgb(106, 160, 240);
+    box-shadow: -8px 7px 16px 0px black;
+}

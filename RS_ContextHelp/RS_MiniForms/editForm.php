@@ -17,13 +17,14 @@ if(!(isset($_POST['aid']) and $_POST['aid'] != '' and  isset($_POST['aCaption'])
         $(document).ready(function () {
             $('#eF_EditForm input[type=submit]').click(function (event) {
                 event.preventDefault();
-                $('<input>', {
-                    type: 'hidden',
-                    name: 'action',
-                    value: $(event.currentTarget).attr('value')
-                }).appendTo($('#eF_EditForm'));
-                sendFormOnServer('#eF_EditForm','/RS_ContextHelp/RS_MiniForms/miniFormsActions.php')
-                    .done(function (result) {
+                let item = $(event.currentTarget);
+                let hiddenAction = $('#eF_EditForm input[type=hidden][name="action"]');
+                if(item.attr('value') === 'Редактировать')
+                    hiddenAction.attr('value','edit');
+                else
+                    hiddenAction.attr('value','remove');
+                sendFormOnServer('#eF_EditForm','/RS_API/api.php')
+                    .done(function () {
                         location.reload();
                     });
             });
@@ -35,8 +36,8 @@ if(!(isset($_POST['aid']) and $_POST['aid'] != '' and  isset($_POST['aCaption'])
                     name: 'pathname',
                     value: $(location).attr('pathname')
                 }).appendTo($('#eF_EditForm2'));
-                sendFormOnServer('#eF_EditForm2','/RS_ContextHelp/RS_MiniForms/miniFormsActions.php')
-                    .done(function (result) {
+                sendFormOnServer('#eF_EditForm2','/RS_API/api.php')
+                    .done(function () {
                         location.reload();
                     });
             });
@@ -46,11 +47,12 @@ if(!(isset($_POST['aid']) and $_POST['aid'] != '' and  isset($_POST['aCaption'])
 <body>
 <div class="eF_ItemContainer">
     <div class="eF_ItemHeader">
-        Редактирование
+        <span class="eF_ItemContainerHeaderText">Редактирование</span>
     </div>
-    <form class="eF_ItemForm" id="eF_EditForm" method="POST" action="/RS_ContextHelp/RS_MiniForms/miniFormsActions.php">
-        <input type="hidden" name="mode" value="editReference">
-        <input type="hidden" name="path" value="<?php echo $path = ReferenceSystem\ReferenceSystem::IdToPath($_POST['aid']); ?>">
+    <form class="eF_ItemForm" id="eF_EditForm" method="POST">
+        <input type="hidden" name="mode" value="article">
+        <input type="hidden" name="action" value="">
+        <input type="hidden" name="pathOrId" value="<?php echo $path = ReferenceSystem\ReferenceSystem::IdToPath($_POST['aid']); ?>">
         <br>
         Путь:
         <p>
@@ -59,23 +61,25 @@ if(!(isset($_POST['aid']) and $_POST['aid'] != '' and  isset($_POST['aCaption'])
         ?>
         </p>
         <br>
-        Заголовок: <input type="text" name="caption" id="edit_caption" value="<?php echo $_POST['aCaption']; ?>">
+        Заголовок:
         <br>
-        <label for="edit_content">Содержимое</label>
+        <input type="text" name="caption" id="edit_caption" value="<?php echo $_POST['aCaption']; ?>">
+        <br>
+        <label for="edit_content">Содержимое:</label>
         <br>
         <textarea name="content" id="edit_content"><?php
                 echo $_POST['aContent'];
                 ?></textarea>
         <br>
         <div style="display: flex; justify-content: space-between;">
-            <input type="submit" value="Редактировать">
-            <input type="submit" value="Удалить">
+            <input type="submit" value="Редактировать" class="eF_mainButton">
+            <input type="submit" value="Удалить" class="eF_mainButton">
         </div>
     </form>
-    <form class="eF_ItemForm" id="eF_EditForm2" method="POST" action="/RS_ContextHelp/RS_MiniForms/miniFormsActions.php">
-        <input type="submit" value="Отвязать элемент от статьи">
-        <input type="hidden" name="mode" value="HTMLChildren">
-        <input type="hidden" name="action" value="Удалить">
+    <form class="eF_ItemForm" id="eF_EditForm2" method="POST">
+        <input type="submit" value="Отвязать элемент от статьи" class="eF_mainButton">
+        <input type="hidden" name="mode" value="html_children">
+        <input type="hidden" name="action" value="remove">
         <input type="hidden" name="pathOrId" value="<?php echo $_POST['aid']; ?>">
         <input type="hidden" name="HTMLelId" value="<?php echo $_POST['html_id']; ?>">
         <input type="hidden" name="uniqueClass" value="<?php echo $_POST['uniqueClass']; ?>">
