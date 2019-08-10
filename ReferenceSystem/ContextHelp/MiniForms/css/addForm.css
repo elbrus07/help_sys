@@ -1,0 +1,140 @@
+.aF_ItemContainer {
+    display: none;
+}
+.aF_ItemContainer, .aF_Menu {
+    border-radius: 0 0 10px 10px;
+    background-color: #bad0f1;
+    box-shadow: inset 0px 4px 9px 0px rgba(0, 0, 0, 0.35);
+    margin: 0 1px 1px 1px ;
+    overflow: auto;
+}
+
+.aF_Menu {
+    background-color: #bad0f1;
+    padding: 10px 20px 10px 20px;
+}
+
+.aF_Menu a:hover {
+    text-decoration: underline;
+}
+
+.aF_ItemHeader {
+    border-bottom: 1px solid black;
+    background-color: rgb(106, 160, 240);
+    margin-bottom: 5px;
+    padding-top: 9px;
+    text-align: center;
+    min-height: 42px;
+}
+
+.aF_ItemContainerHeaderText {
+    font-family: "Segoe UI", sans-serif;
+    font-size: 18pt;
+    color: white;
+}
+
+.aF_ItemForm {
+    padding: 10px 20px 10px 20px;
+    color: black;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 14pt;
+    height: 85%;
+    overflow: hidden;
+}
+.aF_ItemForm select, .aF_ItemForm input, .aF_ItemForm textarea
+{
+    margin-bottom: 3px;
+}
+.aF_ItemForm textarea {
+    width: 98%;
+    height: 120px;
+}
+
+.aF_ItemForm input[type=text]
+{
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: inset 0px 0px 6.75px 2.25px rgba(0, 0, 0, 0.23);
+    padding: 3px 10px 3px 10px;
+    width: 30%;
+    height: 20px;
+}
+
+.aF_ItemForm select {
+    display: inline-block;
+    box-sizing: content-box;
+    font-family: "Segoe UI", sans-serif;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: inset 0px 0px 6.75px 2.25px rgba(0, 0, 0, 0.23);
+    padding: 3px 10px 3px 10px;
+    min-width: 30%;
+    height: 20px;
+}
+
+.aF_ItemForm textarea {
+    border: 1px solid black;
+    background-color: white;
+    box-shadow: inset 0px 0px 6.75px 2.25px rgba(0, 0, 0, 0.23);
+    width: 100%;
+    height: 250px;
+}
+
+.aF_ItemForm select:active, .aF_ItemForm textarea:active {
+    outline: none;
+}
+
+.aF_mainButton {
+    border: 1px solid black;
+    background-color: white;
+    padding: 3px 10px 3px 10px;
+    min-width: 30%;
+    height: 35px;
+}
+
+.aF_mainButton:hover {
+    border: 1px solid black;
+    background-color: white;
+    box-shadow: inset 0px 0px 6px 2px rgba(0, 0, 0, 0.54);
+    padding: 3px 10px 3px 10px;
+    min-width: 30%;
+    height: 35px;
+}
+
+.aF_mainButton:active {
+    border: 1px solid black;
+    background-color: white;
+    box-shadow: inset 0px 0px 14.91px 6.09px rgba(0, 0, 0, 0.54);
+    padding: 3px 10px 3px 10px;
+    height: 35px;
+    min-width: 30%;
+    outline: none;
+}
+
+.aF_Button {
+    border: 1px solid black;
+    background-color: white;
+    padding: 3px 10px 3px 10px;
+    width: 25%;
+    height: 28px;
+}
+
+.aF_Button:hover {
+    border: 1px solid black;
+    background-color: white;
+    box-shadow: inset 0px 0px 6px 2px rgba(0, 0, 0, 0.54);
+    padding: 3px 10px 3px 10px;
+    width: 25%;
+    height: 28px;
+}
+
+.aF_Button:active {
+    border: 1px solid black;
+    background-color: white;
+    box-shadow: inset 0px 0px 14.91px 6.09px rgba(0, 0, 0, 0.54);
+    padding: 3px 10px 3px 10px;
+    width: 25%;
+    height: 28px;
+}

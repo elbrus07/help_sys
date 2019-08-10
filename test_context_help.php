@@ -77,9 +77,9 @@
         }
     </style>
 
-    <link rel="stylesheet" href="/RS_ContextHelp/css/styles.css">
+    <link rel="stylesheet" href="/ReferenceSystem/ContextHelp/css/styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="/RS_ContextHelp/js/context_reference.js"></script>
+    <script src="/ReferenceSystem/ContextHelp/js/context_reference.js"></script>
 </head>
 <body>
 <header><div id="header"><h1>Добро пожаловать в редактор базы данных аэропорта</h1></div></header>
