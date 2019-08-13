@@ -86,7 +86,7 @@ $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
             <?php
             $sch = ReferenceSystem::GetReferenceScheme(array());
             for($i = 0; $i<count($sch); $i++)
-                PrintVertex($sch[$i], 0);
+                PrintVertex($sch[$i], false);
             ?>
         </select>
         /
@@ -114,7 +114,7 @@ $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
             <?php
             $sch = ReferenceSystem::GetReferenceScheme(array());
             for($i = 0; $i<count($sch); $i++)
-                PrintVertex($sch[$i], 0);
+                PrintVertex($sch[$i]);
             ?>
         </select>
         <br>
@@ -130,14 +130,17 @@ $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
  * Крайне извращенная реализация обхода в грубину для вывода оглавления
  *
  * @param ReferenceSchemeItem $Vertex
- * @param int $depth глубина, по молчанию ноль
+ * @param bool $withTag
  */
-function PrintVertex($Vertex, $depth)
+function PrintVertex($Vertex, $withTag = true)
 {
-    echo '<option value="'. $Vertex->Article->getId() .'">' . $Vertex->Article->getPath() . '</option>';
+    if($withTag)
+        echo '<option value="'. $Vertex->Article->getId() .'">' . $Vertex->Article->getPath() . '</option>';
+    else
+        echo '<option>' . $Vertex->Article->getPath() . '</option>';
     for($i = 0; $i<count($Vertex->Children); $i++)
     {
-        PrintVertex($Vertex->Children[$i],$depth+1);
+        PrintVertex($Vertex->Children[$i],$withTag);
     }
 }
 ?>
