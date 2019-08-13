@@ -1,9 +1,8 @@
 $(document).ready(function () {
     //Клик по кнопке добавления статьи
     $('#AddDataForm input[type=submit]').click(function (event) {
-        event.preventDefault();
         let formData = $('#AddDataForm').serialize();
-        $.post('/ReferenceSystem/API/api.php', formData, function () {
+        $.post('../API/api.php', formData, function () {
             location.reload();
         });
     });
@@ -13,12 +12,13 @@ $(document).ready(function () {
         event.preventDefault();
         let item = $(event.currentTarget);
         let hiddenAction = $('#EditDataForm input[type=hidden][name="action"]');
-        if(item.attr('value') === 'Редактировать')
-            hiddenAction.attr('value','edit');
+        if(item.attr('value') === 'Редактировать') {
+            hiddenAction.attr('value', 'edit');
+        }
         else
             hiddenAction.attr('value','remove');
         let formData = $('#EditDataForm').serialize();
-        $.post('/ReferenceSystem/API/api.php', formData, function (result) {
+        $.post('../API/api.php', formData, function () {
             location.reload();
         });
     });
@@ -33,7 +33,7 @@ $(document).ready(function () {
         else
             hiddenAction.attr('value','remove');
         let formData = $('#HTMLChildrenForm').serialize();
-        $.post('/ReferenceSystem/API/api.php', formData, function () {
+        $.post('../API/api.php', formData, function () {
             location.reload();
         });
     });
@@ -43,18 +43,23 @@ $(document).ready(function () {
     ep.change(function () {
         $('#hidden_ep').val(ep.val());
         //Получение данных о статье, которая была выбрана в select
-        $.post('/ReferenceSystem/API/api.php', {'mode': 'article', 'action':'get', 'pathOrId': ep.val()}, function (result) {
+        $.post('../API/api.php', {'mode': 'article', 'action':'get', 'path': ep.val()}, function (result) {
             result = JSON.parse(result);
             $('#edit_content').val(result.Content);
             $('#edit_caption').val(result.Caption);
         });
 
         //Список HTML элементов, связанных со статьей
-        $.post('/ReferenceSystem/API/api.php', {'mode': 'html_children', 'action': 'get', 'pathOrId': ep.val()}, function (result) {
+        $.post('../API/api.php', {'mode': 'html_children', 'action': 'get', 'path': ep.val()}, function (result) {
             let htmlChList = $('#HTMLChildrenList');
             //Очищаем старый список детей
             htmlChList.empty();
-            //Записываем данные о HTML ребенке в JSON формате
+            /**
+             * @typedef {{element_id: string, uniqueClass: string, pathname: string}} child
+             */
+            /**
+             * @type {{result: Object.<int, child>}}
+             */
             result = JSON.parse(result);
             for (let i in result)
                 htmlChList.append('<option value=\''+ JSON.stringify(result[i]) +'\'>'+result[i].element_id+'</option>');
@@ -82,4 +87,5 @@ $(document).ready(function () {
         $('#HTMLChildrenForm input[name="uniqueClass"]').attr('value',arr.uniqueClass);
         $('#HTMLChildrenForm input[name="pathname"]').attr('value',arr.pathname);
     });
+
 });

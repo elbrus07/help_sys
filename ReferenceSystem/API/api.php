@@ -1,6 +1,7 @@
 <?php
 
-use ReferenceSystem\Modules\ReferenceSystem;
+use ReferenceSystem\Modules\RSArticle;
+use ReferenceSystem\Modules\RSArticleModes;
 use ReferenceSystem\Modules\RSUser;
 
 include_once(__DIR__ . '/../vendor/autoload.php');
@@ -15,13 +16,12 @@ if($mode == 'article')
 {
     if($action == 'get')
     {
-        if(!isNotEmpty($_POST['pathOrId']))
+        if(!isNotEmpty($_POST['path']) AND !isNotEmpty($_POST['id']))
             die('Не задан путь или id');
-        $pathOrId = $_POST['pathOrId'];
-        if(is_numeric($pathOrId))
-            echo ReferenceSystem::GetArticleByDBId($pathOrId)->toJSON();
-        else
-            echo ReferenceSystem::GetArticleByPath($pathOrId)->toJSON();
+        $pathOrId = isNotEmpty($_POST['path']) ? $_POST['path'] : $_POST['id'];
+        $type = isNotEmpty($_POST['path']) ? RSArticleModes::PATH : RSArticleModes::ID;
+
+        echo (new RSArticle($pathOrId, $type))->toJSON();
     }
     elseif ($action == 'add')
     {
@@ -33,28 +33,30 @@ if($mode == 'article')
         $path = ($_POST['path_p1'] != '...') ? $_POST['path_p1'] . '/' . $_POST['path_p2'] : $_POST['path_p2'];
         $content = $_POST['content'];
         //Добавляем
-        echo ReferenceSystem::AddReference($path, $content);
+        echo RSArticle::create($path, $content);
     }
     elseif($action == 'edit')
     {
         if(!RSUser::isLoggedIn())
             die('Этот метод доступен только администратору справочной системы');
-        if (!(isNotEmpty($_POST['pathOrId']) AND isNotEmpty($_POST['caption'])
+        if (!((isNotEmpty($_POST['path']) or isNotEmpty($_POST['id'])) AND isNotEmpty($_POST['caption'])
             AND isset($_POST['content'])))
             die('Не задан один из параметров');
-        $pathOrId = $_POST['pathOrId'];
+        $pathOrId = isNotEmpty($_POST['path']) ? $_POST['path'] : $_POST['id'];
+        $type = isNotEmpty($_POST['path']) ? RSArticleModes::PATH : RSArticleModes::ID;
         $caption = $_POST['caption'];
         $content = $_POST['content'];
-        echo ReferenceSystem::EditReference($pathOrId,$caption, $content);
+        echo (new RSArticle($pathOrId, $type))->edit($caption, $content);
     }
     elseif($action == 'remove')
     {
         if(!RSUser::isLoggedIn())
             die('Этот метод доступен только администратору справочной системы');
-        if(!isNotEmpty($_POST['pathOrId']))
+        if(!isNotEmpty($_POST['path']) AND !isNotEmpty($_POST['id']))
             die('Не задан путь или id');
-        $pathOrId = $_POST['pathOrId'];
-        echo ReferenceSystem::RemoveReference($pathOrId);
+        $pathOrId = isNotEmpty($_POST['path']) ? $_POST['path'] : $_POST['id'];
+        $type = isNotEmpty($_POST['path']) ? RSArticleModes::PATH : RSArticleModes::ID;
+        echo (new RSArticle($pathOrId, $type))->remove();
     }
 }
 elseif ($mode == 'html_children')
@@ -68,42 +70,50 @@ elseif ($mode == 'html_children')
         $uniqueClass = $_POST['uniqueClass'];
         $pathname = $_POST['pathname'];
 
-        $arr = ReferenceSystem::GetReferenceOfHTMLItem($item_id,$uniqueClass,$pathname);
-        echo json_encode($arr);
+        echo (new RSArticle($item_id, RSArticleModes::HTML_CHILD_DATA, $uniqueClass, $pathname))->toJSON();
     }
     elseif ($action == 'get')
     {
-        if(!isNotEmpty($_POST['pathOrId']))
+        if(!isNotEmpty($_POST['path']) AND !isNotEmpty($_POST['id']))
             die('Не задан путь или id');
-        $pathOrId = $_POST['pathOrId'];
-        $arr = ReferenceSystem::GetHTMLItemsOfReference($pathOrId);
+        $pathOrId = isNotEmpty($_POST['path']) ? $_POST['path'] : $_POST['id'];
+        $type = isNotEmpty($_POST['path']) ? RSArticleModes::PATH : RSArticleModes::ID;
+        $arr = (new RSArticle($pathOrId, $type))->getHTMLChildren();
         echo json_encode($arr);
     }
     elseif ($action == 'add')
     {
         if(!RSUser::isLoggedIn())
             die('Этот метод доступен только администратору справочной системы');
-        if (!(isNotEmpty($_POST['pathOrId']) AND isNotEmpty($_POST['HTMLelId']) AND isset($_POST['uniqueClass'])
+        if(!isNotEmpty($_POST['path']) AND !isNotEmpty($_POST['id']))
+            die('Не задан путь или id');
+        if (!(isNotEmpty($_POST['HTMLelId']) AND isset($_POST['uniqueClass'])
             AND isNotEmpty($_POST['pathname'])))
             die('Не задан один из параметров');
+
         $HTMLel = $_POST['HTMLelId'];
         $uniqueClass = $_POST['uniqueClass'];
         $pathName = $_POST['pathname'];
-        $pathOrId = $_POST['pathOrId'];
-        echo ReferenceSystem::AddReferenceToHTMLItem($HTMLel,$uniqueClass,$pathName,$pathOrId);
+        $pathOrId = isNotEmpty($_POST['path']) ? $_POST['path'] : $_POST['id'];
+        $type = isNotEmpty($_POST['path']) ? RSArticleModes::PATH : RSArticleModes::ID;
+        echo (new RSArticle($pathOrId, $type))->addHTMLChild($HTMLel,$uniqueClass,$pathName);
     }
     elseif ($action == 'remove')
     {
         if(!RSUser::isLoggedIn())
             die('Этот метод доступен только администратору справочной системы');
-        if (!(isNotEmpty($_POST['pathOrId']) AND isNotEmpty($_POST['HTMLelId']) AND isset($_POST['uniqueClass'])
+        if(!isNotEmpty($_POST['path']) AND !isNotEmpty($_POST['id']))
+            die('Не задан путь или id');
+        if (!(isNotEmpty($_POST['HTMLelId']) AND isset($_POST['uniqueClass'])
             AND isNotEmpty($_POST['pathname'])))
             die('Не задан один из параметров');
+
         $HTMLel = $_POST['HTMLelId'];
         $uniqueClass = $_POST['uniqueClass'];
         $pathName = $_POST['pathname'];
-        $pathOrId = $_POST['pathOrId'];
-        ReferenceSystem::RemoveReferenceOfHTMLItem($HTMLel,$uniqueClass,$pathName,$pathOrId);
+        $pathOrId = isNotEmpty($_POST['path']) ? $_POST['path'] : $_POST['id'];
+        $type = isNotEmpty($_POST['path']) ? RSArticleModes::PATH : RSArticleModes::ID;
+        echo (new RSArticle($pathOrId, $type))->removeHTMLChild($HTMLel,$uniqueClass,$pathName);
     }
 }
 elseif ($mode == 'another')

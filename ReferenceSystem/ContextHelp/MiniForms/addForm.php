@@ -1,20 +1,22 @@
 <?php
 
+use ReferenceSystem\Modules\ReferenceSchemeItem;
 use ReferenceSystem\Modules\ReferenceSystem;
 
 include_once(__DIR__ . '/../../vendor/autoload.php');
 
 if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniqueClass'])))
     die('error');
+$scriptPath = dirname($_SERVER['SCRIPT_NAME']);
 ?>
 <!DOCTYPE HTML>
 <html lang="ru">
 <head>
     <title>Тест входных форм</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/ReferenceSystem/ContextHelp/MiniForms/css/addForm.css">
+    <link rel="stylesheet" href="<?= $scriptPath ?>/css/addForm.css">
     <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->
-    <script src="/ReferenceSystem/ContextHelp/MiniForms/js/editForm.js"></script>
+    <script src="<?= $scriptPath ?>/js/editForm.js"></script>
     <script>
         $(document).ready(function () {
             //Обработка клика на добавление статьи
@@ -34,7 +36,8 @@ if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniq
             //Клик на добавление статьи
             $('#aF_AddContainer .aF_ItemForm input[type=submit]').click(function (event) {
                 event.preventDefault();
-                sendFormOnServer('#aF_AddContainer .aF_ItemForm','/ReferenceSystem/API/api.php')
+                let dir = $('#RS_ScriptDir').attr('value');
+                sendFormOnServer('#aF_AddContainer .aF_ItemForm',dir + '/../../API/api.php')
                     .done(function (article_id) {
                         $('<option>', {
                             value: article_id,
@@ -47,12 +50,13 @@ if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniq
 
             $('#aF_HTMLChildrenContainer .aF_ItemForm input[type=submit]').click(function (event) {
                 event.preventDefault();
+                let dir = $('#RS_ScriptDir').attr('value');
                 $('<input>', {
                     type: 'hidden',
                     name: 'pathname',
                     value: $(location).attr('pathname')
                 }).appendTo($('#aF_HTMLChildrenContainer .aF_ItemForm'));
-                sendFormOnServer('#aF_HTMLChildrenContainer .aF_ItemForm','/ReferenceSystem/API/api.php')
+                sendFormOnServer('#aF_HTMLChildrenContainer .aF_ItemForm',dir + '/../../API/api.php')
                     .done(function () {
                         location.reload();
                     });
@@ -61,6 +65,7 @@ if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniq
     </script>
 </head>
 <body>
+<input type="hidden" id="RS_ScriptDir" value="<?= $scriptPath ?>">
 <div class="aF_Menu">
     <a id="aF_NewArticle" href="/">Новая статья</a>
     <br>
@@ -76,7 +81,6 @@ if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniq
     <form class="aF_ItemForm" method="POST">
         <input type="hidden" name="mode" value="article">
         <input type="hidden" name="action" value="add">
-        Путь:
         <select name="path_p1">
             <option>...</option>
             <?php
@@ -106,7 +110,7 @@ if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniq
         <input type="hidden" name="HTMLelId" value="<?php echo $_POST['html_id']; ?>">
         <input type="hidden" name="uniqueClass" value="<?php echo $_POST['uniqueClass']; ?>">
         Родитель:
-        <select name="pathOrId">
+        <select name="id">
             <?php
             $sch = ReferenceSystem::GetReferenceScheme(array());
             for($i = 0; $i<count($sch); $i++)
@@ -125,12 +129,12 @@ if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniq
 /**
  * Крайне извращенная реализация обхода в грубину для вывода оглавления
  *
- * @param \ReferenceSystem\Modules\ReferenceSchemeItem $Vertex
+ * @param ReferenceSchemeItem $Vertex
  * @param int $depth глубина, по молчанию ноль
  */
 function PrintVertex($Vertex, $depth)
 {
-    echo '<option>' . $Vertex->Path . '</option>';
+    echo '<option value="'. $Vertex->Article->getId() .'">' . $Vertex->Article->getPath() . '</option>';
     for($i = 0; $i<count($Vertex->Children); $i++)
     {
         PrintVertex($Vertex->Children[$i],$depth+1);

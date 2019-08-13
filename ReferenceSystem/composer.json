@@ -1,5 +1,5 @@
 {
-  "name": "Emperator122/ReferenceSystem",
+  "name": "emperator122/reference-system",
   "description": "ReferenceSystem",
   "minimum-stability": "dev",
   "license": "proprietary",
@@ -13,5 +13,8 @@
     "psr-4": {
       "ReferenceSystem\\": "../ReferenceSystem/"
     }
+  },
+  "require": {
+    "spipu/html2pdf": "5.2.1"
   }
 }

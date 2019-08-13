@@ -14,7 +14,7 @@ if (!RSUser::isLoggedIn())
 <head>
     <meta charset="UTF-8">
     <title>Панель администратора справочной системы</title>
-    <link rel="stylesheet" href="/ReferenceSystem/Admin/css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript" src="js/admin_index.js"></script>
 </head>
@@ -22,7 +22,7 @@ if (!RSUser::isLoggedIn())
 <header>
     <div id="header">
         <span id="headerText">Панель администратора справочной системы</span>
-        <span id="LogoutButton"><a href="/ReferenceSystem/Admin/?action=logout">Выйти</a></span>
+        <span id="LogoutButton"><a href="?action=logout">Выйти</a></span>
     </div>
 </header>
 <!-- Добавление материала -->
@@ -62,7 +62,7 @@ if (!RSUser::isLoggedIn())
         <input type="hidden" name="mode" value="article">
         <input type="hidden" name="action" value="">
         Путь:
-        <select id="editPath" name="pathOrId">
+        <select id="editPath" name="path">
             <option hidden disabled selected value>Выберите статью</option>
             <?php
             for($i = 0; $i<count($sch); $i++)
@@ -70,7 +70,8 @@ if (!RSUser::isLoggedIn())
             ?>
         </select>
         <br>
-        Заголовок: <input type="text" name="caption" id="edit_caption">
+        <label for="edit_caption">Заголовок:</label>
+        <input type="text" name="caption" id="edit_caption">
         <br>
         <label for="edit_content">Содержимое:</label>
         <br>
@@ -86,7 +87,7 @@ if (!RSUser::isLoggedIn())
     <form class="Form" id="HTMLChildrenForm" method="POST">
         <input type="hidden" name="mode" value="html_children">
         <input type="hidden" name="action" value="">
-        <input type="hidden" name="pathOrId" id="hidden_ep" value="">
+        <input type="hidden" name="path" id="hidden_ep" value="">
         <label for="HTMLChildrenList">Список id HTML элементов, связанных со статьей:</label>
         <br>
         <select id="HTMLChildrenList" name="HTMLChildrenList">
@@ -128,7 +129,7 @@ if (!RSUser::isLoggedIn())
  */
 function PrintVertex($Vertex)
 {
-    echo '<option>' . $Vertex->Path . '</option>';
+    echo '<option>' . $Vertex->Article->getPath() . '</option>';
     for($i = 0; $i<count($Vertex->Children); $i++)
     {
         PrintVertex($Vertex->Children[$i]);

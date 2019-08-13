@@ -9,7 +9,6 @@ class ReferenceSchemeItem
     public $Article;
     public $Children;
     public $FirstLevel;
-    public $Path;
 
     /**
      * ReferenceSchemeItem конструктор.
@@ -17,13 +16,11 @@ class ReferenceSchemeItem
      * @param RSArticle $article
      * @param ReferenceSchemeItem[] $children
      * @param ReferenceSchemeItem[] $firstLevel
-     * @param string $path
      */
-    public function __construct($article, $children, $firstLevel, $path)
+    public function __construct($article, $children, $firstLevel)
     {
         $this->Article = $article;
         $this->Children = $children;
         $this->FirstLevel = $firstLevel;
-        $this->Path = $path;
     }
 }

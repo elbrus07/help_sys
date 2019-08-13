@@ -30,9 +30,11 @@ $(document).ready(function () {
                             }
                         }
                         let id = senderElement.attr('id');
+                        let scriptDir = getScriptDir();
                         //Получаем статью справки для нашего элемента
                         $.ajax({
-                            url: "/ReferenceSystem/API/api.php",
+                            //url: "/ReferenceSystem/API/api.php",
+                            url: scriptDir + "/../../API/api.php",
                             method: 'POST',
                             data: {
                                 'mode': 'html_children',
@@ -53,20 +55,25 @@ $(document).ready(function () {
                                     }
                                 });
                                 //Получаем данные об авторизации
-                                $.post('/ReferenceSystem/API/api.php',{'mode': 'another', 'action': 'isAdmin'}, function (is_loggedIn) {
-                                    //Массив со статьей справки
+                                $.post(scriptDir + "/../../API/api.php",{'mode': 'another', 'action': 'isAdmin'}, function (is_loggedIn) {
+                                    /**
+                                     * @param result массив со статьей справки
+                                     * @param result.Id id статьи
+                                     * @param result.Content содержимое статьи
+                                     * @param result.Caption заголовок статьи
+                                     */
                                     result = JSON.parse(result);
                                     let url;
                                     let data;
                                     //Если пользователь авторизован (т.е. является администратором справочной системы)
                                     if (is_loggedIn) {
                                         //Если у элемента есть статья справки,
-                                        if (result.length > 0) {
+                                        if (result.Id !== -1) {
                                             //то готовим форму для редактирования статьи / отвязки от статьи,
-                                            result = result[0];
-                                            url = '/ReferenceSystem/ContextHelp/MiniForms/editForm.php';
+                                            url = scriptDir + '/../../ContextHelp/MiniForms/editForm.php';
                                             data = {
                                                 'aid': result.Id,
+                                                'aPath': result.Path,
                                                 'aContent': result.Content,
                                                 'aCaption': result.Caption,
                                                 'html_id': id,
@@ -76,7 +83,7 @@ $(document).ready(function () {
                                         //иначе,
                                         else {
                                             //готовим форму для создания статьи / привязки к статье
-                                            url = '/ReferenceSystem/ContextHelp/MiniForms/addForm.php';
+                                            url = scriptDir + '/../../ContextHelp/MiniForms/addForm.php';
                                             data = {
                                                 'html_id': id,
                                                 'uniqueClass': uniqueClass
@@ -85,15 +92,14 @@ $(document).ready(function () {
                                     }
                                     //Если не авторизован (т.е. обычный пользователь)
                                     else {
-                                        if (result.length > 0) {
+                                        if (result.Id !== -1) {
                                             //то готовим форму для редактирования статьи / отвязки от статьи,
-                                            result = result[0];
-                                            url = '/ReferenceSystem/ContextHelp/MiniForms/showArticleForm.php';
+                                            url = scriptDir + '/../../ContextHelp/MiniForms/showArticleForm.php';
                                             data = {
                                                 'page_id': result.Id
                                             };
                                         } else {
-                                            url = '/ReferenceSystem/ContextHelp/MiniForms/error.php';
+                                            url = scriptDir + '/../../ContextHelp/MiniForms/error.php';
                                         }
                                     }
                                     //Загружаем данные в форму, предварительно добавив на нее кнопку "Закрыть"
@@ -122,3 +128,15 @@ $(document).ready(function () {
         $('.RS_InfoButton').remove();
     });
 });
+
+
+function getScriptDir() {
+    let scripts = document.getElementsByTagName("script");
+    for (let i in scripts)
+    {
+        let n = scripts[i].src.search('ReferenceSystem/ContextHelp/js/');
+        if(n !== -1)
+            return scripts[i].src.substr(0,n+30);
+    }
+    return false;
+}
