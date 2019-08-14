@@ -1,6 +1,6 @@
 $(document).ready(function () {
     //Клик по кнопке добавления статьи
-    $('#AddDataForm input[type=submit]').click(function (event) {
+    $('#AddDataForm input[type=submit]').click(function () {
         let formData = $('#AddDataForm').serialize();
         $.post('../API/api.php', formData, function () {
             location.reload();
@@ -56,37 +56,22 @@ $(document).ready(function () {
             //Очищаем старый список детей
             htmlChList.empty();
             /**
-             * @typedef {{element_id: string, uniqueClass: string, pathname: string}} child
+             * @typedef {{element_id: string}} child
              */
             /**
              * @type {{result: Object.<int, child>}}
              */
             result = JSON.parse(result);
             for (let i in result)
-                htmlChList.append('<option value=\''+ JSON.stringify(result[i]) +'\'>'+result[i].element_id+'</option>');
-            //Очистка значений в полях для ввода (или добавление значения первого ребенка в списке)
-            let attr1 = '';
-            let attr2 = '';
-            let attr3 = '/';
-            if(result.length > 0)
-            {
-                attr1 = result[0].element_id;
-                attr2 = result[0].uniqueClass;
-                attr3 = result[0].pathname;
-            }
-            $('#HTMLChildrenForm input[name="HTMLelId"]').attr('value',attr1);
-            $('#HTMLChildrenForm input[name="uniqueClass"]').attr('value',attr2);
-            $('#HTMLChildrenForm input[name="pathname"]').attr('value',attr3);
+                htmlChList.append('<option>'+result[i].element_id+'</option>');
+
+            htmlChList.trigger('change');
         });
     });
 
     //Изменения выбранного значения в <select> (HTML дети)
-    let htmlChList = $('#HTMLChildrenList');
-    htmlChList.change(function () {
-        let arr = JSON.parse(htmlChList.val());
-        $('#HTMLChildrenForm input[name="HTMLelId"]').attr('value',arr.element_id);
-        $('#HTMLChildrenForm input[name="uniqueClass"]').attr('value',arr.uniqueClass);
-        $('#HTMLChildrenForm input[name="pathname"]').attr('value',arr.pathname);
+    $('#HTMLChildrenList').change(function () {
+        $('#HTMLChildrenForm input[name="HTMLelId"]').attr('value',$('#HTMLChildrenList').val());
     });
 
 });

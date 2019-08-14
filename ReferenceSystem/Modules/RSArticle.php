@@ -15,10 +15,8 @@ class RSArticle
      * RSArticle конструткор
      * @param string|int $identifier id статьи || путь к статье || id HTML элемента
      * @param int $mode RSArticleModes::
-     * @param string $uniqueClass
-     * @param string $pathname
      */
-    public function __construct($identifier, $mode, $uniqueClass = '',$pathname = '')
+    public function __construct($identifier, $mode)
     {
         $this->id = -1;
         $this->path = '';
@@ -36,8 +34,7 @@ class RSArticle
                 if($mysqli->connect_errno)
                     die("Ошибка: " . $mysqli->error . "\n");
                 $itemId = $mysqli->real_escape_string($identifier);
-                $sql = "SELECT data_id FROM ref_system_html_owners WHERE element_id = '$itemId' AND uniqueClass='$uniqueClass'" .
-                    " AND pathname = '$pathname'";
+                $sql = "SELECT data_id FROM ref_system_html_owners WHERE element_id = '$itemId'";
                 if(!$result = $mysqli->query($sql))
                     die("Ошибка: " . $mysqli->error . "\n");
 
@@ -243,22 +240,17 @@ class RSArticle
      * Связать id HTML элемента со статьей
      *
      * @param string $itemId id html элемента, к которому надо добавить статью
-     * @param string $uniqueClass уникальный класс элемента (если более одного элемента с одинаковыми id на странице)
-     * @param string $pathname путь к файлу, в котором вызывается справка ($(location).attr('pathname'))
      * @return bool|string
      */
-    public function addHTMLChild($itemId, $uniqueClass, $pathname)
+    public function addHTMLChild($itemId)
     {
         $mysqli = new mysqli(DBSettings::DB_HOST, DBSettings::DB_LOGIN, DBSettings::DB_PASSWORD, DBSettings::DB_DATABASE);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
         $itemId = $mysqli->real_escape_string($itemId);
-        $uniqueClass = $mysqli->real_escape_string($uniqueClass);
-        $pathname = $mysqli->real_escape_string($pathname);
-
         $parentId = $this->id;
-        $sql = "INSERT INTO ref_system_html_owners(element_id, uniqueClass, pathname, data_id) " .
-            "VALUES('$itemId', '$uniqueClass', '$pathname', $parentId)";
+        $sql = "INSERT INTO ref_system_html_owners(element_id, data_id) " .
+            "VALUES('$itemId', $parentId)";
         if (!$result = $mysqli->query($sql))
             return "Ошибка: " . $mysqli->error . "\n";
         $mysqli->close();
@@ -269,19 +261,15 @@ class RSArticle
      * Удалить связь (id HTML элменента <-> статья)
      *
      * @param string $itemId
-     * @param string $uniqueClass
-     * @param string $pathname
      * @return bool|string
      */
-    public function removeHTMLChild($itemId, $uniqueClass, $pathname)
+    public function removeHTMLChild($itemId)
     {
         $mysqli = new mysqli(DBSettings::DB_HOST, DBSettings::DB_LOGIN, DBSettings::DB_PASSWORD, DBSettings::DB_DATABASE);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
         $itemId = $mysqli->real_escape_string($itemId);
-        $parentId = $this->id;
-        $sql = "DELETE FROM ref_system_html_owners WHERE element_id = '$itemId' AND uniqueClass = '$uniqueClass' " .
-            "AND pathname = '$pathname' AND data_id= '$parentId'";
+        $sql = "DELETE FROM ref_system_html_owners WHERE element_id = '$itemId'";
         if (!$result = $mysqli->query($sql))
             return "Ошибка: " . $mysqli->error . "\n";
         $mysqli->close();
@@ -299,15 +287,13 @@ class RSArticle
         $mysqli = new mysqli(DBSettings::DB_HOST, DBSettings::DB_LOGIN, DBSettings::DB_PASSWORD, DBSettings::DB_DATABASE);
         if($mysqli->connect_errno)
             return "Ошибка: " . $mysqli->error . "\n";
-        $sql = "SELECT element_id, uniqueClass, pathname FROM ref_system_html_owners WHERE data_id=$id";
+        $sql = "SELECT element_id FROM ref_system_html_owners WHERE data_id=$id";
         if (!$result = $mysqli->query($sql))
             return "Ошибка: " . $mysqli->error . "\n";
         $items = array();
         for ($i = 0; $item = $result->fetch_assoc(); $i++)
         {
             $items[$i]['element_id'] = $item['element_id'];
-            $items[$i]['uniqueClass'] = $item['uniqueClass'];
-            $items[$i]['pathname'] = $item['pathname'];
         }
         $mysqli->close();
         return $items;

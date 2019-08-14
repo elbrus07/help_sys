@@ -24,8 +24,8 @@ if (!RSUser::isLoggedIn())
             tinymce.init({
                 selector: '#input_content, #edit_content',
                 language: 'ru',
-                plugins: 'image',
-                toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | image',
+                plugins: 'image, link, lists, autosave',
+                toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | numlist bullist | image link | restoredraft',
                 images_upload_url: path + '/../images/imageUpload.php',
                 images_upload_base_path: path + '/../images',
                 relative_urls: false,
@@ -116,23 +116,12 @@ if (!RSUser::isLoggedIn())
         <label for="HTMLChildrenList">Список id HTML элементов, связанных со статьей:</label>
         <br>
         <select id="HTMLChildrenList" name="HTMLChildrenList">
-            <option disabled selected value></option>
         </select>
         <input type="submit" value="Удалить" class="Button">
         <br>
         Id HTML элемента для добавления:
         <br>
         <input type="text" name="HTMLelId">
-        <br>
-        Уникальный класс (если Id элемента не единственный на странице<br>
-        в формате RS_D&lt;число&gt;:
-        <br>
-        <input type="text" name="uniqueClass" placeholder="RS_D">
-        <br>
-        Путь к файлу, содержащий HTML элемент<br>
-        (напр.: /, или /subfolder/subsubfolder/file.php, или /file.php):
-        <br>
-        <input type="text" name="pathname" value="/">
         <br>
         <input type="submit" value="Добавить" class="Button">
     </form>

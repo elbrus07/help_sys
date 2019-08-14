@@ -63,14 +63,12 @@ elseif ($mode == 'html_children')
 {
     if($action == 'getArticle')
     {
-        if (!(isNotEmpty($_POST['item_id'])  and isset($_POST['uniqueClass']) and isNotEmpty($_POST['pathname'])))
+        if (!(isNotEmpty($_POST['item_id'])))
             die('Не задан один из параметров');
 
         $item_id = $_POST['item_id'];
-        $uniqueClass = $_POST['uniqueClass'];
-        $pathname = $_POST['pathname'];
 
-        echo (new RSArticle($item_id, RSArticleModes::HTML_CHILD_DATA, $uniqueClass, $pathname))->toJSON();
+        echo (new RSArticle($item_id, RSArticleModes::HTML_CHILD_DATA))->toJSON();
     }
     elseif ($action == 'get')
     {
@@ -87,16 +85,13 @@ elseif ($mode == 'html_children')
             die('Этот метод доступен только администратору справочной системы');
         if(!isNotEmpty($_POST['path']) AND !isNotEmpty($_POST['id']))
             die('Не задан путь или id');
-        if (!(isNotEmpty($_POST['HTMLelId']) AND isset($_POST['uniqueClass'])
-            AND isNotEmpty($_POST['pathname'])))
-            die('Не задан один из параметров');
+        if (!(isNotEmpty($_POST['HTMLelId'])))
+            die('Не задан id элемента');
 
         $HTMLel = $_POST['HTMLelId'];
-        $uniqueClass = $_POST['uniqueClass'];
-        $pathName = $_POST['pathname'];
         $pathOrId = isNotEmpty($_POST['path']) ? $_POST['path'] : $_POST['id'];
         $type = isNotEmpty($_POST['path']) ? RSArticleModes::PATH : RSArticleModes::ID;
-        echo (new RSArticle($pathOrId, $type))->addHTMLChild($HTMLel,$uniqueClass,$pathName);
+        echo (new RSArticle($pathOrId, $type))->addHTMLChild($HTMLel);
     }
     elseif ($action == 'remove')
     {
@@ -104,16 +99,13 @@ elseif ($mode == 'html_children')
             die('Этот метод доступен только администратору справочной системы');
         if(!isNotEmpty($_POST['path']) AND !isNotEmpty($_POST['id']))
             die('Не задан путь или id');
-        if (!(isNotEmpty($_POST['HTMLelId']) AND isset($_POST['uniqueClass'])
-            AND isNotEmpty($_POST['pathname'])))
+        if (!(isNotEmpty($_POST['HTMLelId'])))
             die('Не задан один из параметров');
 
         $HTMLel = $_POST['HTMLelId'];
-        $uniqueClass = $_POST['uniqueClass'];
-        $pathName = $_POST['pathname'];
         $pathOrId = isNotEmpty($_POST['path']) ? $_POST['path'] : $_POST['id'];
         $type = isNotEmpty($_POST['path']) ? RSArticleModes::PATH : RSArticleModes::ID;
-        echo (new RSArticle($pathOrId, $type))->removeHTMLChild($HTMLel,$uniqueClass,$pathName);
+        echo (new RSArticle($pathOrId, $type))->removeHTMLChild($HTMLel);
     }
 }
 elseif ($mode == 'another')

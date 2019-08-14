@@ -3,7 +3,7 @@
 include_once(__DIR__ . '/../../vendor/autoload.php');
 
 if(!(isset($_POST['aid']) and $_POST['aid'] != '' and  isset($_POST['aCaption']) and $_POST['aCaption'] != '' and
-    isset($_POST['aContent']) AND isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniqueClass'])))
+    isset($_POST['aContent']) AND isset($_POST['html_id']) and $_POST['html_id'] != ''))
     die('error');
 
 $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
@@ -22,8 +22,8 @@ $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
             tinymce.init({
                 selector: '#input_content, #edit_content',
                 language: 'ru',
-                plugins: 'image',
-                toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | image',
+                plugins: 'image, link, lists, autosave',
+                toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | numlist bullist | image link | restoredraft',
                 images_upload_url: path + '/../../images/imageUpload.php',
                 images_upload_base_path: path + '/../../images',
                 relative_urls: false,
@@ -40,6 +40,7 @@ $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
     <script src="<?= $scriptPath ?>/js/editForm.js"></script>
     <script>
         $(document).ready(function () {
+            //Клик кнопку на форме рекдатирования
             $('#eF_EditForm input[type=submit]').click(function (event) {
                 event.preventDefault();
                 let dir = $('#RS_ScriptDir').attr('value');
@@ -55,14 +56,10 @@ $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
                     });
             });
 
+            //Клик на кнопку отвязывания
             $('#eF_EditForm2 input[type=submit]').click(function (event) {
                 event.preventDefault();
                 let dir = $('#RS_ScriptDir').attr('value');
-                $('<input>', {
-                    type: 'hidden',
-                    name: 'pathname',
-                    value: $(location).attr('pathname')
-                }).appendTo($('#eF_EditForm2'));
                 sendFormOnServer('#eF_EditForm2',dir + '/../../API/api.php')
                     .done(function () {
                         location.reload();
@@ -110,7 +107,6 @@ $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
         <input type="hidden" name="action" value="remove">
         <input type="hidden" name="id" value="<?php echo $_POST['aid']; ?>">
         <input type="hidden" name="HTMLelId" value="<?php echo $_POST['html_id']; ?>">
-        <input type="hidden" name="uniqueClass" value="<?php echo $_POST['uniqueClass']; ?>">
     </form>
 </div>
 

@@ -5,7 +5,7 @@ use ReferenceSystem\Modules\ReferenceSystem;
 
 include_once(__DIR__ . '/../../vendor/autoload.php');
 
-if(!(isset($_POST['html_id']) and $_POST['html_id'] != '' AND isset($_POST['uniqueClass'])))
+if(!isset($_POST['html_id']))
     die('error');
 $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
 ?>
@@ -22,8 +22,8 @@ $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
             tinymce.init({
                 selector: '#input_content, #edit_content',
                 language: 'ru',
-                plugins: 'image',
-                toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | image',
+                plugins: 'image, link, lists, autosave',
+                toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | numlist bullist |image link | restoredraft',
                 images_upload_url: path + '/../../images/imageUpload.php',
                 images_upload_base_path: path + '/../../images',
                 relative_urls: false,
@@ -93,8 +93,6 @@ $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
     <br>
     <a id="aF_NewParent" href="/">Привязать элемент к статье справки</a>
 </div>
-<input type="hidden" id="aF_HTML_ID" value="<?php echo $_POST['html_id']; ?>">
-<input type="hidden" id="aF_uniqueClass" value="<?php echo $_POST['uniqueClass']; ?>">
 <!-- Контейнер для добавления материала -->
 <div class="aF_ItemContainer" id="aF_AddContainer">
     <div class="aF_ItemHeader">
@@ -130,7 +128,6 @@ $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
         <input type="hidden" name="mode" value="html_children">
         <input type="hidden" name="action" value="add">
         <input type="hidden" name="HTMLelId" value="<?php echo $_POST['html_id']; ?>">
-        <input type="hidden" name="uniqueClass" value="<?php echo $_POST['uniqueClass']; ?>">
         Родитель:
         <select name="id">
             <?php
