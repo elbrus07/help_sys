@@ -57,10 +57,8 @@ class Install
                         ') ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8';
         $table3_sql = 'CREATE TABLE IF NOT EXISTS `ref_system_html_owners` ('.
                         '`element_id` varchar(64) NOT NULL, '.
-                        '`uniqueClass` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, '.
-                        '`pathname` varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, '.
                         '`data_id` int(11) NOT NULL, '.
-                        'PRIMARY KEY (`element_id`,`uniqueClass`,`pathname`), '.
+                        'PRIMARY KEY (`element_id`), '.
                         'KEY `ref_system_html_owners_ibfk_1` (`data_id`), '.
                         'CONSTRAINT `ref_system_html_owners_ibfk_1` FOREIGN KEY (`data_id`) REFERENCES `ref_system_data` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT '.
                         ') ENGINE=InnoDB DEFAULT CHARSET=utf8';
