@@ -16,6 +16,30 @@ if (!RSUser::isLoggedIn())
     <title>Панель администратора справочной системы</title>
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script src="../vendor/tinymce/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            let path = $('#RS_ScriptDir').attr('value');
+            tinymce.init({
+                selector: '#input_content, #edit_content',
+                language: 'ru',
+                plugins: 'image',
+                toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | image',
+                images_upload_url: path + '/../images/imageUpload.php',
+                images_upload_base_path: path + '/../images',
+                relative_urls: false,
+                remove_script_host: false,
+                image_uploadtab: true,
+                setup: function (editor) {
+                    editor.on('change', function () {
+                        editor.save();
+                    });
+                }
+            });
+        });
+    </script>
+
     <script type="text/javascript" src="js/admin_index.js"></script>
 </head>
 <body>
@@ -25,6 +49,7 @@ if (!RSUser::isLoggedIn())
         <span id="LogoutButton"><a href="?action=logout">Выйти</a></span>
     </div>
 </header>
+<input type="hidden" id="RS_ScriptDir" value="<?= dirname($_SERVER['SCRIPT_NAME']) ?>">
 <!-- Добавление материала -->
 <div class="ItemContainer">
     <div class="ItemContainerHeader">

@@ -45,7 +45,8 @@ $(document).ready(function () {
         //Получение данных о статье, которая была выбрана в select
         $.post('../API/api.php', {'mode': 'article', 'action':'get', 'path': ep.val()}, function (result) {
             result = JSON.parse(result);
-            $('#edit_content').val(result.Content);
+            //$('#edit_content').val(result.Content);
+            tinymce.get('edit_content').setContent(result.Content);
             $('#edit_caption').val(result.Caption);
         });
 

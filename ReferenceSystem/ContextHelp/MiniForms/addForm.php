@@ -15,6 +15,28 @@ $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
     <title>Тест входных форм</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="<?= $scriptPath ?>/css/addForm.css">
+    <script src="<?= $scriptPath ?>/../../vendor/tinymce/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            let path = $('#RS_ScriptDir').attr('value');
+            tinymce.init({
+                selector: '#input_content, #edit_content',
+                language: 'ru',
+                plugins: 'image',
+                toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | image',
+                images_upload_url: path + '/../../images/imageUpload.php',
+                images_upload_base_path: path + '/../../images',
+                relative_urls: false,
+                remove_script_host: false,
+                image_uploadtab: true,
+                setup: function (editor) {
+                    editor.on('change', function () {
+                        editor.save();
+                    });
+                }
+            });
+        });
+    </script>
     <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->
     <script src="<?= $scriptPath ?>/js/editForm.js"></script>
     <script>
