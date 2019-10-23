@@ -13,7 +13,8 @@
 - Возможность генерации оффлайн версии справки;
 
 ## Используемые пакеты
-- [spipu/html2pdf](https://github.com/spipu/html2pdf)
+- [phpoffice/phpword](https://github.com/PHPOffice/PHPWord)
+- [sunra/php-simple-html-dom-parser](https://github.com/sunra/php-simple-html-dom-parser)
 - [tinymce/tinymce](https://github.com/tinymce/tinymce-dist)
 - [composer/composer](https://github.com/composer/composer)
 

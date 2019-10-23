@@ -11,128 +11,25 @@ include_once(__DIR__ . '/vendor/autoload.php');
 <head>
     <title>Тест форм</title>
     <meta charset="UTF-8">
-    <style type="text/css">
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-        }
-        .ItemContainer
-        {
-            display: flex;
-            box-sizing: border-box;
-            flex-direction: column;
-            background-color: #bad0f1;
-            box-shadow: inset 0 4px 9px 0 rgba(0, 0, 0, 0.35);
-            /*border-radius: 20px;*/
-            border: 1px solid gray;
-            height: 100%;
-        }
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#downloadButton').click(function (event) {
+                event.preventDefault();
+                let el = $('#downloadMenuContainer');
+                let sum =parseInt($('.ItemHeader').css('height')) + 21;
+                el.css('top',sum+"px");
+                if(el.css('display') !== 'none')
+                    el.css('display', 'none');
+                else
+                    el.css('display', 'block');
 
-        .ItemHeader {
-            /*border-radius: 20px 20px 0 0;*/
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid gray;
-            background-color: rgb(106, 160, 240);
-            vertical-align: center;
-            padding: 10px 18px 10px 18px;
-
-        }
-
-        .ItemHeaderText {
-            font-family: "Segoe UI", sans-serif;
-            font-size: 24pt;
-            color: white;
-        }
-
-        #headerItemContainer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .headerItem {
-            padding-right: 10px;
-            margin-right: 5px;
-        }
-
-        #RefContainer {
-            height: 100%;
-            overflow: hidden;
-            display: flex;
-            justify-content: space-between;
-            /*border-radius: 0 0 20px 20px;*/
-
-        }
-        #TableOfContentsContainer {
-            font-family: "Segoe UI", sans-serif;
-            font-size: 16pt;
-            overflow: auto;
-            width: 20%;
-            padding-left: 5px;
-            padding-right: 5px;
-            border-right: 1px solid gray;
-        }
-        #Content {
-            overflow: auto;
-            width:80%;
-            padding: 0 8px 10px 8px;
-            border-left: 1px solid gray;
-        }
-        #TableOfContents {
-            list-style-type: none;
-            margin: 5px 0 5px 0;
-            padding: 0;
-        }
-        #TableOfContents li {
-            border-bottom: 1px solid gray;
-        }
-        #TableOfContents ul {
-            list-style-type: none;
-        }
-        #searchText {
-            border: 1px solid gray;
-            border-radius: 10px;
-            background-color: white;
-            box-shadow: inset 0 0 7px 2px rgba(0, 0, 0, 0.23);
-            padding: 3px 10px 3px 10px;
-            height: 20px;
-        }
-        #searchButton {
-            border-radius: 10px;
-            border: 1px solid gray;
-            background-color: white;
-            height: 28px;
-            padding: 3px 10px 3px 10px;
-            cursor: pointer;
-        }
-        #searchButton:active {
-            outline: none;
-        }
-        #searchButton:focus,#searchText:focus {
-            outline:0;
-            border-color: black;
-        }
-        a {
-            color: black;
-            text-decoration: none;
-        }
-        a:hover {
-            color: black;
-        }
-
-        #downloadButton {
-            width: 32px;
-            height: 32px;
-            background: url("css/icons/download.png") center no-repeat;
-            cursor: pointer;
-        }
-    </style>
+            });
+        });
+    </script>
 </head>
 <body>
-    <!-- Когда-нибудь здесь будет выходная форма для тестов -->
     <div class="ItemContainer">
         <div class="ItemHeader" id="header">
             <span class="ItemHeaderText">
@@ -144,7 +41,7 @@ include_once(__DIR__ . '/vendor/autoload.php');
                     <input type="text" name="searchText" id="searchText" value="<?= (isset($_GET['searchText'])) ? $_GET['searchText'] : '' ?>">
                     <input type="submit" value="Найти" id="searchButton">
                 </form>
-                <div id="downloadButton" class="headerItem" onclick="location.href='download.php';"></div>
+                <div id="downloadButton" class="headerItem"></div>
             </div>
         </div>
         <div id="RefContainer">
@@ -168,6 +65,15 @@ include_once(__DIR__ . '/vendor/autoload.php');
                 ?>
             </div>
         </div>
+    </div>
+    <div id="downloadMenuContainer">
+        <ul>
+            <li class="downloadMenuItem"><a href="<?="download.php?mode=all"?>" target="_blank">Всю справку</a></li>
+            <li class="downloadMenuItem"><a href="<?=(isset($_GET['page_id'])) ? "download.php?mode=this&article_id=".$_GET['page_id']
+                : '#'?>" target="_blank">Данную статью</a></li>
+            <li class="downloadMenuItem"><a href="<?=(isset($_GET['page_id'])) ? "download.php?mode=branch&article_id=".$_GET['page_id']
+                : '#'?>" target="_blank">Статью и подстатьи</a></li>
+        </ul>
     </div>
 </body>
 </html>
