@@ -1,106 +1,92 @@
 <?php
-
+/*
+ * Загрузчик оффлайн версии справки
+ */
 
 namespace ReferenceSystem\Modules;
 
 require_once __DIR__.'/../vendor/autoload.php';
-
-use Sunra\PhpSimple\HtmlDomParser;
-use PhpOffice\PhpWord;
-
 
 
 
 
 class OfflineReference
 {
-    public static function XHTMLTagsFix($html)
+    /**
+     * Загрузка всей справки
+     * @param string $filename имя загружаемого файла
+     * @throws \PhpOffice\PhpWord\Exception\Exception
+     */
+    public static function downloadAll(string $filename) : void
     {
-        $tagsForFix = [ 'img', 'br' ];
-        $parser = HtmlDomParser::str_get_html( $html );
-        foreach ($tagsForFix as $tagName) {
-            foreach ($parser->find($tagName) as $e) {
-                if($e->outertext[mb_strlen($e->outertext)-2] != '/')
-                    $e->outertext = mb_substr($e->outertext, 0, mb_strlen($e->outertext) - 1) . "/>";
-            }
-        }
-        return $parser->save();
-    }
-
-    public static function downloadAll($filename)
-    {
-        $phpWord = new PhpWord\PhpWord();
-        PhpWord\Settings::setOutputEscapingEnabled(true);
-        $phpWord->addParagraphStyle('Heading2', array('alignment' => 'center'));
+        $html2doc = new HTML2DOCGenerator();
         $sch = ReferenceSystem::GetReferenceScheme();
-        $str = "";
+        $html = "";
         for ($i = 0; $i<count($sch); $i++)
         {
-            $section = $phpWord->addSection();
-            self::printVertex($sch[$i], $str, 1);
-            $editedHTML = OfflineReference::XHTMLTagsFix($str);
-            PhpWord\Shared\Html::addHtml($section,$editedHTML, false, false);
-            $str = "";
+            $html2doc->addSection();
+            self::DFSReferenceContentParse($sch[$i], $html);
+            $html2doc->addHTML($html);
+            $html = "";
         }
-        self::startDownload($phpWord, $filename);
+        $html2doc->startDownload($filename);
     }
-    public static function downloadOne($filename,$article_id)
+
+    /**
+     * Загрузка отдельной статьи
+     * @param string $filename имя загружаемого файла
+     * @param int $article_id id статьи
+     * @throws \PhpOffice\PhpWord\Exception\Exception
+     */
+    public static function downloadOne(string $filename,int $article_id) : void
     {
-        $phpWord = new PhpWord\PhpWord();
-        PhpWord\Settings::setOutputEscapingEnabled(true);
-        $phpWord->addParagraphStyle('Heading2', array('alignment' => 'center'));
-        $section = $phpWord->addSection();
+        $html2doc = new HTML2DOCGenerator();
+        $html2doc->addSection();
         $article = new RSArticle($article_id,RSArticleModes::ID);
-        $str = "<span style='font-size: 16px; font-weight: bold;'>".$article->getCaption() . "</span><br/>\r\n";
-        $str .= $article->getContent() . "<br/>\r\n";
-        $article->getCaption();
-        $editedHTML = OfflineReference::XHTMLTagsFix($str);
-        PhpWord\Shared\Html::addHtml($section,$editedHTML, false, false);
-        self::startDownload($phpWord, $filename);
+        $html = "<h1>".$article->getCaption()."</h1>" . "<br/>\r\n";
+        $html .= $article->getContent() . "<br/>\r\n";
+        $html2doc->addHTML($html);
+        $html2doc->startDownload($filename);
     }
-    public static function downloadBranch($filename,$article_id)
+
+    /**
+     * Загрузка ветки справки (элемент + дети + дети детей + ...)
+     * @param string $filename имя загружаемого файла
+     * @param int $article_id id статьи
+     * @throws \PhpOffice\PhpWord\Exception\Exception
+     */
+    public static function downloadBranch(string $filename, int $article_id) : void
     {
-        $phpWord = new PhpWord\PhpWord();
-        PhpWord\Settings::setOutputEscapingEnabled(true);
-        $phpWord->addParagraphStyle('Heading2', array('alignment' => 'center'));
+        $html2doc = new HTML2DOCGenerator();
         $article = new RSArticle($article_id,RSArticleModes::ID);
         $rsi = new ReferenceSchemeItem($article,[],null);
         $sch = [$rsi];
         $rsi->FirstLevel = $sch;
         $sch = ReferenceSystem::GetReferenceScheme($sch);
-        $str = "";
+        $html = "";
         for ($i = 0; $i<count($sch); $i++)
         {
-            $section = $phpWord->addSection();
-            self::printVertex($sch[$i], $str, 1);
-            $editedHTML = OfflineReference::XHTMLTagsFix($str);
-            PhpWord\Shared\Html::addHtml($section,$editedHTML, false, false);
-            $str = "";
+            $html2doc->addSection();
+            self::DFSReferenceContentParse($sch[$i], $html);
+            $html2doc->addHTML($html);
+            $html = "";
         }
-        self::startDownload($phpWord, $filename);
+        $html2doc->startDownload($filename);
     }
 
     /**
-     * @param PhpWord\PhpWord $phpWord
-     * @param $filename
-     * @throws PhpWord\Exception\Exception
+     * Обход в глубину элементов справки
+     * @param ReferenceSchemeItem $Vertex Элемент справки
+     * @param string $str Переменная для вывода контента
+     * @param int $depth Глубина
      */
-    private static function startDownload($phpWord, $filename)
+    private static function DFSReferenceContentParse(ReferenceSchemeItem $Vertex, string &$str, int $depth = 1) : void
     {
-        header( "Content-Type: application/vnd.openxmlformats-officedocument.wordprocessing‌​ml.document" );// you should look for the real header that you need if it's not Word 2007!!!
-        header( 'Content-Disposition: attachment; filename='.$filename );
-
-        //$h2d_file_uri = tempnam( "", "htd" );
-        $objWriter = PhpWord\IOFactory::createWriter( $phpWord, "Word2007" );
-        $objWriter->save( "php://output" );
-    }
-    private static function printVertex($Vertex, &$str, $depth)
-    {
-        $str .= "<span style='font-size: 16px; font-weight: bold;'>".$Vertex->Article->getCaption() . "</span><br/>\r\n";
+        $str .= "<h$depth>".$Vertex->Article->getCaption() . "</h$depth>\r\n";
         $str .= $Vertex->Article->getContent() . "<br/>\r\n";
         for($i = 0; $i<count($Vertex->Children); $i++)
         {
-            self::printVertex($Vertex->Children[$i], $str, $depth+1);
+            self::DFSReferenceContentParse($Vertex->Children[$i], $str, $depth+1);
         }
     }
 }

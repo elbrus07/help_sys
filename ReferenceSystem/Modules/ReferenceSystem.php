@@ -15,7 +15,7 @@ class ReferenceSystem
      * @param string $searchString строка для поиска
      * @return RSArticle[]|string
      */
-    public static function SearchReference($searchString)
+    public static function SearchReference(string $searchString)
     {
         $mysqli = new mysqli(DBSettings::DB_HOST, DBSettings::DB_LOGIN, DBSettings::DB_PASSWORD, DBSettings::DB_DATABASE);
         if($mysqli->connect_errno)
@@ -83,7 +83,7 @@ class ReferenceSystem
      * @param string $path путь к статье в формате "Chapter/Section/Subsection/Subsubsection/.../(n*Sub)section"
      * @return int|string
      */
-    public static function PathToId($path)
+    public static function PathToId(string $path)
     {
         $mysqli = new mysqli(DBSettings::DB_HOST, DBSettings::DB_LOGIN, DBSettings::DB_PASSWORD, DBSettings::DB_DATABASE);
         if($mysqli->connect_errno)
@@ -112,7 +112,7 @@ class ReferenceSystem
      * @param int $id
      * @return string
      */
-    public static function IdToPath($id)
+    public static function IdToPath(int $id)
     {
         $mysqli = new mysqli(DBSettings::DB_HOST, DBSettings::DB_LOGIN, DBSettings::DB_PASSWORD, DBSettings::DB_DATABASE);
         if($mysqli->connect_errno)

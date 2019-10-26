@@ -24,11 +24,21 @@ $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
                 language: 'ru',
                 plugins: 'image, link, lists, autosave',
                 toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | numlist bullist | image link | restoredraft',
-                images_upload_url: path + '/../../images/imageUpload.php',
-                images_upload_base_path: path + '/../../images',
+                images_upload_url: path + '/../images/imageUpload.php',
+                images_upload_base_path: path + '/../images',
                 relative_urls: false,
                 remove_script_host: false,
                 image_uploadtab: true,
+                block_formats: 'Paragraph=p;Preformatted=pre',
+                style_formats: [
+                    {title: 'Heading 1', block : 'div', styles : {color : '#000000', 'font-size': '16pt', 'font-weight': 'bold' }},
+                    {title: 'Heading 2', block : 'div', styles : {color : '#000000', 'font-size': '15pt', 'font-weight': 'bold' }},
+                    {title: 'Heading 3', block : 'div', styles : {color : '#000000', 'font-size': '14pt', 'font-weight': 'bold' }},
+                    {title: 'Heading 4', block : 'div', styles : {color : '#000000', 'font-size': '13pt', 'font-weight': 'bold' }},
+                    {title: 'Heading 5', block : 'div', styles : {color : '#000000', 'font-size': '12pt', 'font-weight': 'bold' }},
+                    {title: 'Heading 6', block : 'div', styles : {color : '#000000', 'font-size': '12pt', 'font-weight': 'normal' }},
+                    {title: 'paragraph', block: 'p', styles : {color : '000000', 'font-size': '12pt', 'font-weight': 'normal'}}
+                ],
                 setup: function (editor) {
                     editor.on('change', function () {
                         editor.save();
